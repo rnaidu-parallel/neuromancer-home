@@ -4,6 +4,9 @@ import Hero from '../components/Hero.astro';
 import Span from '../components/Span.astro';
 import SpanNav from '../components/SpanNav.astro';
 import ToolCall from '../components/ToolCall.astro';
+import Experience from '../components/Experience.astro';
+import MemoryRecall from '../components/MemoryRecall.astro';
+import EvalBoard from '../components/EvalBoard.astro';
 import { projects } from '../data/projects';
 
 const title = 'Rahul Naidu Siriporam — agentic AI engineer';
@@ -22,19 +25,9 @@ const plan = [
 // 02 · get_projects() — terminals with desktop pin+swap (see scripts/projects.ts).
 //      Data lives in src/data/projects.ts.
 
-// 03 · get_experience() — two entries, plain for now; Phase 4 restyles.
-const experience = [
-  {
-    role: 'Canvas AI — founding software engineer',
-    when: 'jul 2022 – present',
-    line: 'Founding engineer owning agentic AI products end to end: agentic chat platforms, consumer-health AI serving thousands daily, vision pipelines, and a ClickHouse analytics warehouse.',
-  },
-  {
-    role: 'Quantile Analytics — quantitative analyst',
-    when: 'jul 2021 – jul 2022',
-    line: 'Data pipelines and NLP tooling for systematic equity strategies.',
-  },
-];
+// 03 · get_experience() — structured log blocks (see components/Experience.astro).
+// 04 · recall("writing") — build-time RSS + fallback (see components/MemoryRecall.astro).
+// 05 · eval scoreboard — checked numbers (see components/EvalBoard.astro).
 
 const contacts = [
   { label: 'schedule a call', href: 'https://calendar.app.google/6ukMiHNSgbPLC5YA7' },
@@ -88,43 +81,15 @@ const contacts = [
     </Span>
 
     <Span id="experience" index="03" kind="tool_call: get_experience()" branch>
-      <ul class="stack">
-        {
-          experience.map((e) => (
-            <li>
-              <p class="stack-name mono">
-                {e.role} · {e.when}
-              </p>
-              <p class="stack-line">{e.line}</p>
-            </li>
-          ))
-        }
-      </ul>
+      <Experience />
     </Span>
 
     <Span id="writing" index="04" kind='memory: recall("writing")'>
-      <p class="lede mono">Retrieving recent writing from blog.neuromancer.in…</p>
-      <ul class="stack">
-        <li><p class="stack-line dim-note mono">(memory hits land in phase 4)</p></li>
-      </ul>
+      <MemoryRecall />
     </Span>
 
     <Span id="eval" index="05" kind="eval: scoreboard">
-      <p class="lede">Claims are cheap. Checking the published numbers:</p>
-
-      <table class="scoreboard mono">
-        <tbody>
-          <tr>
-            <td>glucose forecaster</td>
-            <td>94% of 2h-ahead predictions in Clarke Zone A</td>
-          </tr>
-          <tr>
-            <td>vision meal logging</td>
-            <td>10k+ images/day · adoption 24% → 38%</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="stack-line dim-note mono">(full scoreboard lands in phase 4)</p>
+      <EvalBoard />
     </Span>
 
     <Span id="answer" index="06" kind="answer" terminal>
@@ -171,10 +136,6 @@ const contacts = [
     color: var(--c-text);
     font-size: var(--fs-h3);
     line-height: 1.4;
-  }
-  .lede.mono {
-    font-size: var(--fs-micro);
-    color: var(--c-cyan);
   }
 
   /* 01 · plan checklist — mono grid rows */
@@ -247,18 +208,7 @@ const contacts = [
     opacity: 0.75;
   }
 
-  /* project / experience stacks */
-  .stack {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-6);
-  }
-  .stack-name {
-    color: var(--c-bright);
-    font-size: var(--fs-small);
-  }
+  /* 06 · answer — dim-note/stack-line carry the phase-5 placeholder line */
   .stack-line {
     color: var(--c-text);
     margin-top: var(--sp-1);
@@ -266,25 +216,6 @@ const contacts = [
   .dim-note {
     color: var(--c-text);
     opacity: 0.7;
-  }
-
-  /* 05 · scoreboard */
-  .scoreboard {
-    margin-top: var(--sp-4);
-    border-collapse: collapse;
-    font-size: var(--fs-micro);
-  }
-  .scoreboard td {
-    padding: var(--sp-2) var(--sp-4) var(--sp-2) 0;
-    border-top: 1px solid var(--c-line);
-    vertical-align: top;
-  }
-  .scoreboard td:first-child {
-    color: var(--c-bright);
-    white-space: nowrap;
-  }
-  .scoreboard td:last-child {
-    color: var(--c-text);
   }
 
   /* 06 · answer */

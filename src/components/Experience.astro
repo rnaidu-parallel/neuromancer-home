@@ -1,0 +1,209 @@
+---
+/**
+ * Experience.astro — span 03 (tool_call: get_experience()) content.
+ *
+ * Two roles rendered as structured log blocks: a mono header (company +
+ * · role · dates), a one-line sans summary, then log lines each prefixed with a
+ * cyan `>` glyph and trailed by static mono tag chips (visual metadata only — no
+ * filtering UI, deliberate restraint).
+ *
+ * Final-state DOM: everything ships as real text. The inline script only applies
+ * a hidden pre-state + enter stagger at runtime in the non-reduced branch; with
+ * JS off / reduced motion the blocks are static and fully visible.
+ *
+ * Every copy string here is VERBATIM and audited against published sources.
+ */
+interface LogLine {
+  text: string;
+  tags: string[];
+}
+interface Role {
+  company: string;
+  role: string;
+  dates: string;
+  summary: string;
+  logs: LogLine[];
+}
+
+const roles: Role[] = [
+  {
+    company: 'Canvas AI',
+    role: 'founding software engineer',
+    dates: 'jul 2022 – present',
+    summary: 'Founding engineer owning agentic AI products and backend platforms end to end.',
+    logs: [
+      {
+        text: 'Built Jarvis, a WhatsApp-native investing companion: two-tier memory, mid-session compaction, proactive follow-ups, and an LLM-judge eval harness scoring every turn.',
+        tags: ['agents', 'memory', 'evals'],
+      },
+      {
+        text: 'Led three engineers on a diabetes-care assistant serving thousands daily. Evolved RAG to GraphRAG to a QLoRA fine-tune; re-architected one agent into a multi-agent system.',
+        tags: ['agents', 'rag', 'fine-tuning'],
+      },
+      {
+        text: 'Replicated the CGMformer paper into a hybrid Transformer-LSTM glucose forecaster. 94% of 2-hour-ahead predictions in Clarke Error Grid Zone A.',
+        tags: ['ml', 'health'],
+      },
+      {
+        text: 'Shipped a vision meal-logging pipeline handling 10K+ images a day at p90 ~6s. Meal-logging adoption went from 24% to 38%.',
+        tags: ['vision', 'infra'],
+      },
+      {
+        text: 'Built the core of a B2B product-analytics platform: funnels, cohorts, and 8+ connectors unifying tens of millions of events a day on ClickHouse.',
+        tags: ['data', 'infra'],
+      },
+    ],
+  },
+  {
+    company: 'Quantile Analytics',
+    role: 'quantitative analyst',
+    dates: 'jul 2021 – jul 2022',
+    summary: 'Data pipelines and NLP tooling for systematic equity strategies.',
+    logs: [
+      {
+        text: 'Automated pipelines tracking 20+ global indices and generating rebalancing signals, replacing manual workflows.',
+        tags: ['data', 'pipelines'],
+      },
+      {
+        text: 'Built an NLP parser for SEC filings feeding index-rebalancing models.',
+        tags: ['nlp', 'data'],
+      },
+    ],
+  },
+];
+---
+
+<div class="xp" data-xp>
+  {
+    roles.map((r) => (
+      <section class="xp-role">
+        <div class="xp-block" data-xp-item>
+          <p class="xp-head mono">
+            <span class="xp-co">{r.company}</span>
+            <span class="xp-meta"> · {r.role} · {r.dates}</span>
+          </p>
+          <p class="xp-summary">{r.summary}</p>
+        </div>
+
+        <ul class="xp-log">
+          {r.logs.map((l) => (
+            <li class="xp-line" data-xp-item>
+              <span class="xp-glyph mono" aria-hidden="true">
+                &gt;
+              </span>
+              <span class="xp-text">
+                {l.text}
+                <span class="xp-tags">
+                  {l.tags.map((t) => (
+                    <span class="xp-tag mono">{t}</span>
+                  ))}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .xp {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-12);
+  }
+
+  .xp-block {
+    margin-bottom: var(--sp-6);
+  }
+
+  .xp-head {
+    line-height: 1.5;
+  }
+  .xp-co {
+    color: var(--c-bright);
+    font-weight: 700;
+  }
+  .xp-meta {
+    color: var(--c-text);
+  }
+
+  .xp-summary {
+    font-family: var(--font-sans);
+    color: var(--c-text);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    margin-top: var(--sp-2);
+  }
+
+  .xp-log {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .xp-line {
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  .xp-glyph {
+    flex: none;
+    color: var(--c-cyan);
+    user-select: none;
+    line-height: 1.5;
+  }
+
+  .xp-text {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--fs-small);
+    color: var(--c-text);
+    line-height: 1.5;
+  }
+
+  /* Static visual metadata — no filtering, just texture. */
+  .xp-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-left: var(--sp-2);
+    vertical-align: middle;
+  }
+  .xp-tag {
+    text-transform: lowercase;
+    color: var(--c-text);
+    background: var(--c-raised);
+    border: 1px solid var(--c-line);
+    border-radius: 2px;
+    padding: 1px 6px;
+  }
+</style>
+
+<script>
+  // Enter stagger — final-state DOM, runtime-only pre-state, non-reduced branch.
+  import gsap from 'gsap';
+  import { onMotionReady } from '../scripts/motion';
+
+  // ScrollTrigger is registered globally by motion.ts; the shared gsap instance
+  // resolves the `scrollTrigger:` config below, so no direct import is needed.
+  onMotionReady(({ reduced }) => {
+    if (reduced) return;
+    const root = document.querySelector<HTMLElement>('[data-xp]');
+    if (!root) return;
+    const items = gsap.utils.toArray<HTMLElement>('[data-xp-item]', root);
+    if (!items.length) return;
+
+    gsap.from(items, {
+      opacity: 0,
+      y: 16,
+      duration: 0.5,
+      ease: 'power2.out',
+      stagger: 0.08,
+      scrollTrigger: { trigger: root, start: 'top 80%', once: true },
+    });
+  });
+</script>
