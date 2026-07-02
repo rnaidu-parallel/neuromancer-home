@@ -1,0 +1,44 @@
+:root {
+  /* color — indigo-slate + phosphor amber / data cyan */
+  --c-bg: #0d1220;          /* page background */
+  --c-raised: #151c2c;      /* cards, terminals, raised surfaces */
+  --c-line: #232c40;        /* hairlines, borders */
+  --c-amber: #ffb454;       /* primary accent: trace thread, span markers, highlights */
+  --c-amber-dim: rgba(255, 180, 84, 0.14);  /* subtle amber fills/glows */
+  --c-cyan: #7fd4e4;        /* secondary accent: values, links, cursor */
+  --c-cyan-dim: rgba(127, 212, 228, 0.12);
+  --c-text: #9aa7b8;        /* body text */
+  --c-bright: #e8edf4;      /* headings, emphasis */
+  --c-dim: #5b6778;         /* DECORATIVE/LARGE TEXT ONLY — fails 4.5:1 on --c-bg; never body copy */
+  --c-ok: #7dd48a;          /* success/status green, sparing */
+
+  /* type */
+  --font-mono: 'Commit Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'General Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-display: clamp(2.75rem, 1.5rem + 6.25vw, 6.5rem);   /* hero name */
+  --fs-h2: clamp(1.75rem, 1.2rem + 2.75vw, 3.25rem);        /* span titles / big moments */
+  --fs-h3: clamp(1.25rem, 1.05rem + 1vw, 1.75rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.875rem;
+  --fs-micro: 0.75rem;       /* mono labels, span indices, nav */
+  --lh-tight: 1.05;
+  --lh-body: 1.65;
+  --ls-caps: 0.08em;         /* tracked-out mono uppercase labels */
+
+  /* space — 4px base */
+  --sp-1: 0.25rem; --sp-2: 0.5rem; --sp-3: 0.75rem; --sp-4: 1rem;
+  --sp-6: 1.5rem; --sp-8: 2rem; --sp-12: 3rem; --sp-16: 4rem;
+  --sp-24: 6rem; --sp-32: 8rem;
+
+  /* layout */
+  --w-page: 72rem;           /* outer container */
+  --w-prose: 40rem;          /* reading column */
+  --rail: 4.5rem;            /* left trace-rail gutter on desktop */
+
+  /* z */
+  --z-thread: 1; --z-content: 10; --z-nav: 100; --z-cursor: 200;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms; --dur-med: 400ms;
+}
