@@ -34,17 +34,26 @@ function randPool(target: string): string {
 export interface ScrambleOpts {
   /** total animation duration in ms (default 900) */
   duration?: number;
+  /**
+   * Optional cancellation. When the signal aborts, the effect snaps the element
+   * to its final text and resolves immediately. Backward-compatible: existing
+   * callers pass no signal and get the original run-to-completion behaviour.
+   */
+  signal?: AbortSignal;
 }
 
 /**
  * scrambleResolve — scramble the element's text, then resolve it left-to-right.
  * Content is captured from the existing DOM and replayed; never inserted.
+ * Pass `opts.signal` to allow a fast-forward that snaps to the final text.
  */
 export function scrambleResolve(el: HTMLElement, opts: ScrambleOpts = {}): Promise<void> {
   const original = el.textContent ?? '';
   const duration = opts.duration ?? 900;
+  const signal = opts.signal;
 
-  if (prefersReduced() || original.length === 0) {
+  // Reduced motion, empty text, or already-aborted → leave final text as-is.
+  if (prefersReduced() || original.length === 0 || signal?.aborted) {
     return Promise.resolve();
   }
 
@@ -53,7 +62,24 @@ export function scrambleResolve(el: HTMLElement, opts: ScrambleOpts = {}): Promi
   const start = performance.now();
 
   return new Promise<void>((resolve) => {
+    let raf = 0;
+
+    const finalize = (): void => {
+      el.textContent = original;
+      el.removeAttribute('aria-label');
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    };
+
+    const onAbort = (): void => {
+      cancelAnimationFrame(raf);
+      finalize();
+    };
+
+    signal?.addEventListener('abort', onAbort, { once: true });
+
     function frame(now: number): void {
+      if (signal?.aborted) return; // onAbort has (or will) finalize.
       const t = Math.min(1, (now - start) / duration);
       // number of characters fully resolved so far (left-to-right)
       const resolvedCount = Math.floor(t * chars.length);
@@ -69,14 +95,12 @@ export function scrambleResolve(el: HTMLElement, opts: ScrambleOpts = {}): Promi
       el.textContent = out;
 
       if (t < 1) {
-        requestAnimationFrame(frame);
+        raf = requestAnimationFrame(frame);
       } else {
-        el.textContent = original;
-        el.removeAttribute('aria-label');
-        resolve();
+        finalize();
       }
     }
-    requestAnimationFrame(frame);
+    raf = requestAnimationFrame(frame);
   });
 }
 
@@ -178,16 +202,6 @@ export function typeOn(el: HTMLElement, opts: TypeOpts = {}): TypeHandle {
   return { done, finishNow };
 }
 
-/**
- * maskedLines — prepare an element for a line-masked y-translate reveal.
- *
- * NOTE (Phase 0 stub): this is a documented thin stub. Phase 1 will replace the
- * innards with GSAP SplitText (lines) + per-line clip wrappers. For now it only
- * tags the element with `data-lines` so downstream code can find prepared nodes,
- * and returns the element unchanged. It performs NO DOM restructuring, so the
- * accessible text is untouched. Kept intentionally minimal per the phase plan.
- */
-export function maskedLines(el: HTMLElement): HTMLElement {
-  el.setAttribute('data-lines', '');
-  return el;
-}
+// NOTE: the former `maskedLines` stub was removed in Phase 1 — the line-masked
+// reveal is now done directly with GSAP SplitText (type/mask: 'lines') inside
+// boot.ts, which is the natural home for GSAP-timeline-coordinated animation.

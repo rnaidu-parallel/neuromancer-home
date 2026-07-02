@@ -92,7 +92,14 @@ a:hover {
 }
 
 /* --- utilities --- */
+/* terminal voice: lowercase, raw — the machine speaks in lowercase */
 .mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+}
+
+/* labels only (nav, span indices): tracked-out caps opt-in */
+.mono-label {
   font-family: var(--font-mono);
   font-size: var(--fs-micro);
   text-transform: uppercase;

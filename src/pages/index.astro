@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
 
 const title = 'Rahul Naidu Siriporam — agentic AI engineer';
 const description =
@@ -17,12 +18,7 @@ const spans = [
 
 <Base title={title} description={description}>
   <main id="main" class="container">
-    <header id="boot">
-      <p class="mono">$ query "who is rahul?"</p>
-      <h1>Rahul Naidu Siriporam</h1>
-      <p>Founding engineer, building agentic AI systems.</p>
-      <p class="mono">[status] run started · 6 spans queued</p>
-    </header>
+    <Hero />
 
     {
       spans.map((span, i) => (
@@ -38,4 +34,10 @@ const spans = [
       <p class="mono">[run pending] · spans: 6</p>
     </footer>
   </main>
+
+  <script>
+    // Page-specific boot orchestration. motion.ts (global, loaded in Base)
+    // owns the matchMedia branch; boot.ts registers into it via onMotionReady.
+    import '../scripts/boot.ts';
+  </script>
 </Base>
