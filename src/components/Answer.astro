@@ -86,6 +86,20 @@ const contacts = [
     color: var(--c-dim);
   }
 
+  /* Hover language (pointer-fine only): links grow their underline offset and
+     shift toward bright. The CTA pill (border/fill) is excluded. */
+  @media (pointer: fine) {
+    .contacts a:not(.contact-cta) {
+      transition:
+        color var(--dur-fast) var(--ease-out),
+        text-underline-offset var(--dur-fast) var(--ease-out);
+    }
+    .contacts a:not(.contact-cta):hover {
+      color: var(--c-bright);
+      text-underline-offset: 6px;
+    }
+  }
+
   /* Primary CTA: amber hairline pill, no fill; amber-dim fill on hover. */
   .contact-cta {
     color: var(--c-amber);

@@ -28,6 +28,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onMotionReady } from './motion';
+import { scrambleResolve } from './text-fx';
 
 onMotionReady(({ reduced }) => {
   const spans = gsap.utils.toArray<HTMLElement>('[data-span]');
@@ -106,6 +107,19 @@ onMotionReady(({ reduced }) => {
       onEnter: () => marker?.classList.remove('is-idle'),
       onLeaveBack: () => marker?.classList.add('is-idle'),
     });
+
+    // --- span header: scramble-resolve the kind label on first enter ---
+    // The ● 0N · glyphs ride in on the clip-path wipe below; only the kind text
+    // scrambles. aria-label pinning is handled inside scrambleResolve.
+    const kind = span.querySelector<HTMLElement>('.span-kind');
+    if (kind) {
+      ScrollTrigger.create({
+        trigger: span,
+        start: 'top 75%',
+        once: true,
+        onEnter: () => void scrambleResolve(kind, { duration: 500 }),
+      });
+    }
 
     // --- content clip-path entry wipe (once, forward only) ---
     if (content) {

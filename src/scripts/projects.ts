@@ -10,10 +10,12 @@
  * `.is-pinned-stage` class, which is added HERE at runtime — so with JS off /
  * reduced motion / mobile the page is a readable stack and nothing overlaps.
  *
- *   desktop + motion : pin the card stack for (N-1) viewports and scrub a
- *                      crossfade+drift swap through the four cards, with a snap
- *                      per card, a diegetic [i/N] progress readout, and a
- *                      per-card typeOn that fires as each card becomes active
+ *   desktop + motion : pin the card stack and scrub a SEQUENTIAL swap through the
+ *                      four cards — each card holds, then hands off with zero
+ *                      opacity overlap (outgoing fully fades before incoming
+ *                      begins). No snap (it fought Lenis and yanked scroll a full
+ *                      viewport per step). A diegetic [i/N] progress readout and a
+ *                      per-card typeOn fire as each card becomes active
  *                      (finishNow() if you scrub past mid-type). Inactive cards
  *                      are inert + aria-hidden while stacked.
  *   mobile (motion)  : no pin; each terminal typeOns once on enter (top 80%),
@@ -33,7 +35,8 @@ import { onMotionReady } from './motion';
 import { typeOn, type TypeHandle } from './text-fx';
 
 const TERM_CPS = 55; // terminal typing speed
-const DRIFT = 24; // px y-drift on swap
+const DRIFT = 16; // px y-drift on swap
+const HOLD = 0.7; // fraction of each card's segment spent fully visible (rest = transition)
 
 onMotionReady(({ reduced, desktop }) => {
   const stage = document.querySelector<HTMLElement>('[data-projects-stage]');
@@ -48,11 +51,17 @@ onMotionReady(({ reduced, desktop }) => {
 
   const handles: (TypeHandle | null)[] = new Array(N).fill(null);
   const ensureType = (i: number): void => {
-    if (!handles[i]) handles[i] = typeOn(cards[i]!, { cps: TERM_CPS });
+    if (handles[i]) return;
+    const h = typeOn(cards[i]!, { cps: TERM_CPS });
+    handles[i] = h;
+    // When the terminal finishes typing (naturally or via finishNow), mark it
+    // "live" so CSS parks a blinking cursor on the last output line.
+    void h.done.then(() => cards[i]!.querySelector('.term')?.classList.add('term-live'));
   };
 
-  // ---------------- mobile (< 768px): no pin, per-terminal typeOn ----------
-  if (!desktop) {
+  // ---------------- stacked mode (mobile, or desktop that can't fit the pin):
+  // no pin, per-terminal typeOn on enter.
+  const setupStacked = (): void => {
     cards.forEach((card, i) => {
       ScrollTrigger.create({
         trigger: card,
@@ -63,19 +72,28 @@ onMotionReady(({ reduced, desktop }) => {
         onLeaveBack: () => handles[i]?.finishNow(),
       });
     });
+  };
+
+  if (!desktop) {
+    setupStacked();
     return;
   }
 
   // ---------------- desktop: pin the stack, scrub the card swap -------------
   const progress = stage.querySelector<HTMLElement>('[data-projects-progress]');
 
-  // Measure the tallest card while still in normal flow, freeze the stage to
-  // that height, THEN switch to absolute stacking. Keeps the pinned box a fixed
-  // size regardless of which card is showing (no jump on swap). Card width is
-  // unchanged (inset:0 → same column width as flow), so heights stay valid.
-  const maxH = Math.max(...cards.map((c) => c.offsetHeight));
-  stage.style.minHeight = `${maxH}px`;
+  // Stage height = tallest card's NATURAL height at the CURRENT width. Cards
+  // are absolutely stacked with height:auto (top/left/right only), so they lay
+  // out at stage width and can never be squeezed — the stage adopts the max.
+  // Re-measured on every ScrollTrigger refresh (resize/rotate) and after the
+  // web fonts land (wrap changes = height changes).
+  const measure = (): number => {
+    const maxH = Math.max(...cards.map((c) => c.offsetHeight));
+    stage.style.height = `${maxH}px`;
+    return maxH;
+  };
   stage.classList.add('is-pinned-stage');
+  measure();
 
   // Initial stacked state: card 0 shown, the rest hidden + drifted down.
   gsap.set(cards[0]!, { opacity: 1, y: 0 });
@@ -84,8 +102,7 @@ onMotionReady(({ reduced, desktop }) => {
   // Active-card bookkeeping: classes, inert/aria-hidden, progress readout, and
   // typing (start the new card, finish any we scrubbed away mid-type).
   let current = -1;
-  const setActive = (raw: number): void => {
-    const idx = Math.max(0, Math.min(N - 1, raw));
+  const setActive = (idx: number): void => {
     if (idx === current) return;
     current = idx;
     if (progress) progress.textContent = `[${idx + 1}/${N}]`;
@@ -116,17 +133,32 @@ onMotionReady(({ reduced, desktop }) => {
   current = 0;
   if (progress) progress.textContent = `[1/${N}]`;
 
-  // Swap timeline (scrubbed by the pin): each transition i occupies one time
-  // unit — outgoing card drifts up + fades, incoming drifts in + fades, a brief
-  // full-overlap crossfade. Total length N-1; snap lands on whole-card stops.
+  // Swap timeline (scrubbed by the pin), built on a normalized 0..1 clock so
+  // scroll progress maps straight through. Card i owns segment [i/N, (i+1)/N];
+  // its first HOLD fraction is dead-still (fully visible, nothing moving) and the
+  // last (1-HOLD) is the hand-off. Within that hand-off window the outgoing card
+  // fully fades (opacity 1→0, y 0→-DRIFT) in the FIRST half, THEN the incoming
+  // card fades in (opacity 0→1, y DRIFT→0) in the SECOND half — so at no scroll
+  // position are two cards both above 0 opacity. The last card has no trailing
+  // transition; a zero-duration spacer at t=1 extends the clock through its hold.
+  const SEG = 1 / N;
   const swap = gsap.timeline();
   for (let i = 0; i < N - 1; i++) {
-    swap.to(cards[i]!, { opacity: 0, y: -DRIFT, ease: 'none', duration: 1 }, i);
-    swap.to(cards[i + 1]!, { opacity: 1, y: 0, ease: 'none', duration: 1 }, i);
+    const transStart = i * SEG + SEG * HOLD; // end of card i's hold
+    const half = (SEG * (1 - HOLD)) / 2;
+    swap.to(cards[i]!, { opacity: 0, y: -DRIFT, ease: 'none', duration: half }, transStart);
+    swap.to(
+      cards[i + 1]!,
+      { opacity: 1, y: 0, ease: 'none', duration: half },
+      transStart + half,
+    );
   }
+  // Extend the timeline to the full 0..1 range so the final card holds to the
+  // pin's end (progress 1) instead of the clock stopping at the last hand-off.
+  swap.to({}, { duration: 0.0001 }, 1);
 
   // First card types when the stack scrolls into view (before the pin locks).
-  ScrollTrigger.create({
+  const enterTrigger = ScrollTrigger.create({
     trigger: stage,
     start: 'top 80%',
     once: true,
@@ -134,19 +166,69 @@ onMotionReady(({ reduced, desktop }) => {
   });
 
   // Pin + scrub. start 'center center' locks the stack when centered; end is
-  // (N-1) viewport heights of scroll (≡ +=300vh for N=4), recomputed on refresh
-  // so 900px- and 1440px-tall viewports both get a clean per-card scroll budget.
-  ScrollTrigger.create({
+  // (N-1)·85vh of scroll — a touch tighter than full viewports for a snappier
+  // feel, and recomputed on refresh so short and tall viewports both get a clean
+  // per-card budget. NO snap: it fought Lenis and yanked scroll a whole viewport
+  // per step; the hold-then-handoff timeline gives the settled feel without it.
+  // Active card switches at each segment boundary (hold start): idx = ⌊p·N⌋.
+  const pinTrigger = ScrollTrigger.create({
     trigger: stage,
     start: 'center center',
-    end: () => '+=' + window.innerHeight * (N - 1),
+    end: () => '+=' + window.innerHeight * 0.85 * (N - 1),
     pin: true,
     pinSpacing: true,
-    scrub: 0.5,
-    snap: { snapTo: 1 / (N - 1), duration: 0.3 },
+    scrub: 0.4,
     animation: swap,
-    onUpdate: (self) => setActive(Math.round(self.progress * (N - 1))),
+    onUpdate: (self) => setActive(Math.min(N - 1, Math.floor(self.progress * N))),
   });
+
+  // If the tallest card doesn't fit the viewport (narrow/short desktop windows
+  // — cards get much taller at e.g. 788px wide), the pinned experience clips:
+  // tear it down and fall back to the plain stacked layout for this session.
+  let tornDown = false;
+  const teardownPin = (): void => {
+    if (tornDown) return;
+    tornDown = true;
+    ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
+    enterTrigger.kill();
+    pinTrigger.kill(true); // revert pin + spacer
+    swap.kill();
+    stage.classList.remove('is-pinned-stage');
+    stage.style.height = '';
+    cards.forEach((c, i) => {
+      c.classList.remove('is-active');
+      c.removeAttribute('inert');
+      c.removeAttribute('aria-hidden');
+      gsap.set(c, { clearProps: 'opacity,transform' });
+      handles[i]?.finishNow();
+    });
+    setupStacked();
+    ScrollTrigger.refresh();
+  };
+
+  const fitsViewport = (maxH: number): boolean => maxH <= window.innerHeight * 0.88;
+
+  // Re-measure stage height whenever ScrollTrigger re-measures (resize/rotate),
+  // BEFORE it recalculates trigger positions; bail out entirely if we no longer fit.
+  const onRefreshInit = (): void => {
+    const maxH = measure();
+    if (!fitsViewport(maxH)) queueMicrotask(teardownPin);
+  };
+  ScrollTrigger.addEventListener('refreshInit', onRefreshInit);
+
+  // Fonts landing changes line wraps → card heights; re-measure and refresh.
+  void document.fonts?.ready.then(() => {
+    if (!tornDown) {
+      measure();
+      ScrollTrigger.refresh();
+    }
+  });
+
+  // Initial fit check (covers loading directly in a short/narrow window).
+  if (!fitsViewport(measure())) {
+    teardownPin();
+    return;
+  }
 
   // Re-sort/re-measure all triggers now that the pin spacer has grown the span.
   ScrollTrigger.refresh();

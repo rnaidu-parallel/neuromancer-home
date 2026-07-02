@@ -49,6 +49,35 @@ const { command, lines, label } = Astro.props;
     border: 1px solid var(--c-line);
     border-radius: 6px;
     overflow: hidden;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  /* Hover language (pointer-fine only): the window frame warms to amber. */
+  @media (pointer: fine) {
+    .term:hover {
+      border-color: rgba(255, 180, 84, 0.25);
+    }
+  }
+
+  /* Live cursor: projects.ts adds .term-live once a terminal finishes typing;
+     a blinking block cursor then rests on the last output line so the terminal
+     reads "still running". CSS-only, gated to non-reduced. */
+  @media (prefers-reduced-motion: no-preference) {
+    .term-live .term-row:last-child .term-txt::after {
+      content: '▋';
+      color: var(--c-amber);
+      margin-left: 0.1em;
+      animation: term-blink 1.1s steps(2, jump-none) infinite;
+    }
+  }
+
+  @keyframes term-blink {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 
   .term-bar {

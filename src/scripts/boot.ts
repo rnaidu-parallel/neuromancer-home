@@ -21,6 +21,15 @@ gsap.registerPlugin(SplitText, CustomEase);
 const EASE = CustomEase.create('traceOut', 'M0,0 C0.22,1 0.36,1 1,1');
 const SEEN_KEY = 'trace-boot-seen';
 
+// The hero name has landed — FluxShader listens and fires a burst from it.
+// Dispatched exactly once per page load, on every non-reduced boot path.
+let bootAnnounced = false;
+function announceBoot(): void {
+  if (bootAnnounced) return;
+  bootAnnounced = true;
+  window.dispatchEvent(new CustomEvent('trace:boot-complete'));
+}
+
 onMotionReady(({ reduced }) => {
   const hero = document.getElementById('boot');
   if (!hero) return;
@@ -47,6 +56,7 @@ onMotionReady(({ reduced }) => {
       opacity: 0.6,
       duration: 0.3,
       ease: EASE,
+      onComplete: announceBoot,
     });
     return;
   }
@@ -109,7 +119,11 @@ onMotionReady(({ reduced }) => {
   // re-fires this call — does not kick off a second scramble.
   tl.call(
     () => {
-      if (!finished) scrambleResolve(name, { duration: 900, signal: scrambleAbort.signal });
+      if (!finished) {
+        void scrambleResolve(name, { duration: 900, signal: scrambleAbort.signal }).then(
+          announceBoot, // the name resolved (naturally or via abort) — burst
+        );
+      }
     },
     [],
     0.9,
@@ -133,6 +147,7 @@ onMotionReady(({ reduced }) => {
     gsap.set(split.lines, { yPercent: 0 });
     tl.progress(1); // completes run / headline / status / cue tweens
     sessionStorage.setItem(SEEN_KEY, '1');
+    announceBoot(); // covers a fast-forward that lands before the scramble starts
     teardown();
   };
 

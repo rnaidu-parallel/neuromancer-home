@@ -116,6 +116,8 @@ const hits = await getWriting();
 
   // ScrollTrigger is registered globally by motion.ts; the shared gsap instance
   // resolves the `scrollTrigger:` config below, so no direct import is needed.
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
   onMotionReady(({ reduced }) => {
     if (reduced) return;
     const root = document.querySelector<HTMLElement>('[data-mr]');
@@ -130,6 +132,39 @@ const hits = await getWriting();
       ease: 'power2.out',
       stagger: 0.08,
       scrollTrigger: { trigger: root, start: 'top 80%', once: true },
+    });
+
+    // Score count-up — the final "0.NN" strings are the HTML source of truth;
+    // capture, pin the accessible name, count from 0 on enter, restore exactly
+    // (same pattern as EvalBoard's count-up).
+    const scores = Array.from(root.querySelectorAll<HTMLElement>('.mr-score'));
+    if (!scores.length) return;
+    const finals = scores.map((s) => s.textContent ?? '');
+    ScrollTrigger.create({
+      trigger: root,
+      start: 'top 80%',
+      once: true,
+      onEnter: () => {
+        scores.forEach((s, i) => {
+          const final = finals[i]!;
+          const to = parseFloat(final) || 0;
+          s.setAttribute('aria-label', final);
+          const proxy = { v: 0 };
+          gsap.to(proxy, {
+            v: to,
+            duration: 0.6,
+            delay: i * 0.08,
+            ease: 'power1.out',
+            onUpdate: () => {
+              s.textContent = proxy.v.toFixed(2);
+            },
+            onComplete: () => {
+              s.textContent = final;
+              s.removeAttribute('aria-label');
+            },
+          });
+        });
+      },
     });
   });
 </script>

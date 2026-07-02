@@ -3,6 +3,7 @@ import '@fontsource/commit-mono/400.css';
 import '@fontsource/commit-mono/700.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
+import Flux from '../components/Flux.astro';
 
 interface Props {
   title: string;
@@ -47,7 +48,7 @@ const personLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#0d1220" />
+    <meta name="theme-color" content="#070a12" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -80,6 +81,7 @@ const personLd = {
     />
   </head>
   <body>
+    <Flux />
     <a class="skip-link" href="#main">skip to content</a>
     <slot />
     <script>

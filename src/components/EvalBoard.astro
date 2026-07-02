@@ -93,7 +93,7 @@ const rows: Row[] = [
   </table>
 </div>
 
-<p class="eval-pass mono">[5/5 checks passed]</p>
+<p class="eval-pass mono"><span data-type-line>[5/5 checks passed]</span></p>
 
 <style>
   .lede {
@@ -159,6 +159,7 @@ const rows: Row[] = [
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { onMotionReady } from '../scripts/motion';
+  import { typeOn } from '../scripts/text-fx';
 
   interface CountPart {
     to: number;
@@ -176,6 +177,13 @@ const rows: Row[] = [
 
     const cells = Array.from(table.querySelectorAll<HTMLElement>('[data-count]'));
     if (!cells.length) return;
+
+    // Pass line types on after the count-ups finish. Hide it now (runtime
+    // pre-state); typeOn re-manages visibility when it runs. Final-state DOM
+    // ships it visible, so JS-off / reduced motion keep it static.
+    const passLine = document.querySelector<HTMLElement>('.eval-pass');
+    const passTyped = passLine?.querySelector<HTMLElement>('[data-type-line]');
+    if (passTyped) passTyped.style.visibility = 'hidden';
 
     const specs = cells.map((cell) => {
       const original = cell.textContent ?? '';
@@ -218,6 +226,8 @@ const rows: Row[] = [
               cell.textContent = original;
               cell.removeAttribute('aria-label');
             });
+            // Numbers are in — now stream the verdict line.
+            if (passLine) typeOn(passLine, { cps: 30 });
           },
         });
       },

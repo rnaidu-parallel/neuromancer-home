@@ -89,6 +89,18 @@ const { project } = Astro.props;
     display: inline-block;
     padding-block: var(--sp-2);
   }
+  /* Hover language (pointer-fine only): underline offset grows + color shifts. */
+  @media (pointer: fine) {
+    .tc-meta a {
+      transition:
+        color var(--dur-fast) var(--ease-out),
+        text-underline-offset var(--dur-fast) var(--ease-out);
+    }
+    .tc-meta a:hover {
+      color: var(--c-bright);
+      text-underline-offset: 6px;
+    }
+  }
   .tc-meta .sep {
     color: var(--c-dim);
     white-space: pre;
@@ -99,7 +111,10 @@ const { project } = Astro.props;
      transform/opacity are animated (the swap). */
   :global(.projects-stage.is-pinned-stage) .toolcall {
     position: absolute;
-    inset: 0;
+    /* top/left/right only — height stays auto so a card can never be squeezed
+       shorter than its content (a bottom constraint clipped terminals at
+       narrow desktop widths; the stage sizes itself to the tallest card). */
+    inset: 0 0 auto 0;
     will-change: transform, opacity;
   }
 </style>

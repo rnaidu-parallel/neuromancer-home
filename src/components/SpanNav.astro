@@ -77,11 +77,19 @@ const items = [
     opacity: 0.8;
     transition:
       color var(--dur-fast) var(--ease-out),
-      opacity var(--dur-fast) var(--ease-out);
+      opacity var(--dur-fast) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
   }
 
   .span-nav a:hover {
     opacity: 1;
+  }
+
+  /* Hover language (pointer-fine only): nav item slides slightly toward its rail. */
+  @media (pointer: fine) {
+    .span-nav a:hover {
+      transform: translateX(-2px);
+    }
   }
 
   .span-nav .dot {

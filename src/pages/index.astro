@@ -111,9 +111,55 @@ const plan = [
     // non-reduced-motion inside cursor.ts (via onMotionReady).
     import '../scripts/cursor.ts';
 </script>
+
+  <script>
+    // 01 · plan checklist tick-in. Final-state DOM ships every row [x] (no-JS =
+    // all checked). Non-reduced only: rewind to [ ] at runtime, then tick each
+    // row in sequence with a brief green flash. The [x]/[ ] glyph is aria-hidden,
+    // so mutating it is invisible to AT.
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    import { onMotionReady } from '../scripts/motion';
+
+    onMotionReady(({ reduced }) => {
+      if (reduced) return;
+      const list = document.querySelector<HTMLElement>('#plan .plan');
+      if (!list) return;
+      const rows = Array.from(list.querySelectorAll<HTMLElement>('li'));
+      const pks = rows.map((r) => r.querySelector<HTMLElement>('.pk'));
+      if (!rows.length) return;
+
+      // Rewind to unchecked synchronously (runtime pre-state).
+      pks.forEach((pk) => pk && (pk.textContent = '[ ]'));
+
+      ScrollTrigger.create({
+        trigger: '#plan',
+        start: 'top 75%',
+        once: true,
+        onEnter: () => {
+          rows.forEach((row, i) => {
+            window.setTimeout(() => {
+              const pk = pks[i];
+              if (pk) pk.textContent = '[x]';
+              row.classList.add('is-ticked');
+              window.setTimeout(() => row.classList.remove('is-ticked'), 300);
+            }, i * 180);
+          });
+        },
+      });
+    });
+  </script>
 </Base>
 
 <style>
+  /* Content sits ABOVE the Flux grid/glow (z 0) and BELOW the CRT pass (z 5),
+     which whispers over the text like a real screen. z-index 1 (not --z-content)
+     is deliberate: it keeps #main under the CRT layer while span-content's own
+     z-index:var(--z-content) still orders correctly inside this context. */
+  #main {
+    position: relative;
+    z-index: 1;
+  }
+
   .lede {
     color: var(--c-text);
     font-size: var(--fs-h3);
@@ -152,6 +198,26 @@ const plan = [
   }
   .plan .goto:hover {
     color: var(--c-bright);
+  }
+
+  /* Row flashes green the instant it ticks (see the plan-tick script). */
+  .plan li .fn {
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .plan li.is-ticked .fn {
+    color: var(--c-ok);
+  }
+
+  /* Hover language (pointer-fine only): the goto arrow nudges toward its target. */
+  @media (pointer: fine) {
+    .plan .goto {
+      transition:
+        color var(--dur-fast) var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+    .plan .goto:hover {
+      transform: translateX(3px);
+    }
   }
 
   /* 02 · get_projects() — intro + card stack */

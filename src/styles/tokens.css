@@ -1,8 +1,8 @@
 :root {
   /* color — indigo-slate + phosphor amber / data cyan */
-  --c-bg: #0d1220;          /* page background */
-  --c-raised: #151c2c;      /* cards, terminals, raised surfaces */
-  --c-line: #232c40;        /* hairlines, borders */
+  --c-bg: #070a12;          /* page background — near-black, lets the grid/glow read */
+  --c-raised: #131a29;      /* cards, terminals, raised surfaces (nudged up off the deeper bg) */
+  --c-line: #1f2840;        /* hairlines, borders */
   --c-amber: #ffb454;       /* primary accent: trace thread, span markers, highlights */
   --c-amber-dim: rgba(255, 180, 84, 0.14);  /* subtle amber fills/glows */
   --c-cyan: #7fd4e4;        /* secondary accent: values, links, cursor */
@@ -11,6 +11,14 @@
   --c-bright: #e8edf4;      /* headings, emphasis */
   --c-dim: #5b6778;         /* DECORATIVE/LARGE TEXT ONLY — fails 4.5:1 on --c-bg; never body copy */
   --c-ok: #7dd48a;          /* success/status green, sparing */
+
+  /* living background (Flux.astro) — grid hairlines, CRT scanline/vignette,
+     sweep band, phosphor glow. All whisper-opacity amber on near-black. */
+  --grid-line: rgba(255, 180, 84, 0.055);
+  --scanline: rgba(0, 0, 0, 0.16);
+  --vignette: rgba(2, 4, 9, 0.5);
+  --sweep: rgba(255, 180, 84, 0.05);
+  --glow: rgba(255, 180, 84, 0.06);
 
   /* type */
   --font-mono: 'Commit Mono', 'Commit Mono Fallback', ui-monospace, 'SF Mono', Menlo, monospace;
