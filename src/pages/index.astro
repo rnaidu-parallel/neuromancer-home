@@ -7,6 +7,9 @@ import ToolCall from '../components/ToolCall.astro';
 import Experience from '../components/Experience.astro';
 import MemoryRecall from '../components/MemoryRecall.astro';
 import EvalBoard from '../components/EvalBoard.astro';
+import Answer from '../components/Answer.astro';
+import McpCard from '../components/McpCard.astro';
+import RunFooter from '../components/RunFooter.astro';
 import { projects } from '../data/projects';
 
 const title = 'Rahul Naidu Siriporam — agentic AI engineer';
@@ -28,15 +31,8 @@ const plan = [
 // 03 · get_experience() — structured log blocks (see components/Experience.astro).
 // 04 · recall("writing") — build-time RSS + fallback (see components/MemoryRecall.astro).
 // 05 · eval scoreboard — checked numbers (see components/EvalBoard.astro).
-
-const contacts = [
-  { label: 'schedule a call', href: 'https://calendar.app.google/6ukMiHNSgbPLC5YA7' },
-  { label: 'github', href: 'https://github.com/rnaidu-parallel' },
-  { label: 'linkedin', href: 'https://www.linkedin.com/in/rahul-naidu-siriporam-15472116b' },
-  { label: 'x', href: 'https://x.com/rahulwlw' },
-  { label: 'blog', href: 'https://blog.neuromancer.in' },
-  { label: 'resume', href: 'https://blog.neuromancer.in/resume.pdf' },
-];
+// 06 · answer — streamed synthesis + contacts + MCP easter egg (see
+//      components/Answer.astro, McpCard.astro, scripts/answer.ts).
 ---
 
 <Base title={title} description={description}>
@@ -93,29 +89,11 @@ const contacts = [
     </Span>
 
     <Span id="answer" index="06" kind="answer" terminal>
-      <p class="answer-text">
-        Founding engineer who has spent four years shipping agentic AI systems to
-        production, and publishes the sharp edges he finds along the way. Worth the
-        conversation.
-      </p>
-
-      <p class="contacts mono">
-        {
-          contacts.map((c, i) => (
-            <>
-              {i > 0 && <span class="sep" aria-hidden="true"> · </span>}
-              <a href={c.href}>{c.label}</a>
-            </>
-          ))
-        }
-      </p>
-      <p class="stack-line dim-note mono">(mcp easter egg lands in phase 5)</p>
+      <Answer />
+      <McpCard />
     </Span>
 
-    <footer class="run-footer">
-      <div aria-hidden="true"></div>
-      <p class="mono">[run pending] · spans: 6</p>
-    </footer>
+    <RunFooter />
   </main>
 
   <SpanNav />
@@ -128,6 +106,7 @@ const contacts = [
     // Imported AFTER thread.ts so the pin trigger is created after the thread's
     // draw triggers; projects.ts calls ScrollTrigger.refresh() to re-sort them.
     import '../scripts/projects.ts';
+    import '../scripts/answer.ts';
   </script>
 </Base>
 
@@ -208,44 +187,5 @@ const contacts = [
     opacity: 0.75;
   }
 
-  /* 06 · answer — dim-note/stack-line carry the phase-5 placeholder line */
-  .stack-line {
-    color: var(--c-text);
-    margin-top: var(--sp-1);
-  }
-  .dim-note {
-    color: var(--c-text);
-    opacity: 0.7;
-  }
-
-  /* 06 · answer */
-  .answer-text {
-    font-size: var(--fs-h3);
-    line-height: 1.45;
-    color: var(--c-bright);
-  }
-  .contacts {
-    margin-top: var(--sp-6);
-    font-size: var(--fs-micro);
-    line-height: 2;
-  }
-  .contacts .sep {
-    color: var(--c-dim);
-  }
-
-  /* Footer mirrors the span grid (empty rail column) so its text aligns with
-     span content. The thread terminates at the answer span — no rail here. */
-  .run-footer {
-    display: grid;
-    grid-template-columns: var(--rail) minmax(0, 1fr);
-    column-gap: var(--sp-2);
-    padding-block: var(--sp-16) var(--sp-24);
-    color: var(--c-text);
-  }
-
-  @media (max-width: 767px) {
-    .run-footer {
-      grid-template-columns: var(--rail-m) minmax(0, 1fr);
-    }
-  }
+  /* 06 · answer + footer live in Answer/McpCard/RunFooter components. */
 </style>

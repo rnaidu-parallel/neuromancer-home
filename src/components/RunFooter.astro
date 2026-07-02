@@ -1,0 +1,54 @@
+---
+/**
+ * RunFooter.astro — the run's closing line + colophon.
+ *
+ * Mirrors the span grid (empty rail column) so the text aligns with span
+ * content. `[run complete]` is static final-state text — the diegetic "run
+ * finishes as you reach the bottom" beat is carried by thread.ts flipping the
+ * terminal cap; the footer is deliberately not wired to scroll state.
+ */
+const buildDate = new Date().toISOString().slice(0, 10);
+---
+
+<footer class="run-footer">
+  <div aria-hidden="true"></div>
+  <div class="run-footer-body">
+    <p class="mono">
+      <span class="rf-ok">[run complete]</span> · spans: 6 · built {buildDate}
+    </p>
+    <p class="mono rf-colophon">
+      astro + gsap + lenis · commit mono + general sans · no trackers, no analytics ·
+      <a href="https://github.com/rnaidu-parallel/neuromancer-home">view source</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .run-footer {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: var(--sp-2);
+    padding-block: var(--sp-16) var(--sp-24);
+    color: var(--c-text);
+  }
+
+  .run-footer-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .rf-ok {
+    color: var(--c-ok);
+  }
+
+  .rf-colophon {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 767px) {
+    .run-footer {
+      grid-template-columns: var(--rail-m) minmax(0, 1fr);
+    }
+  }
+</style>

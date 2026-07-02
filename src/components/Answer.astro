@@ -1,0 +1,100 @@
+---
+/**
+ * Answer.astro — span 06 content: the run's synthesized final answer.
+ *
+ * Final-state DOM: status line, synthesis paragraph, availability line, and
+ * contact links all ship as real text/markup — fully visible with JS off or
+ * under reduced motion. answer.ts (non-reduced only) applies the pre-states at
+ * runtime and streams everything in: status typeOn → paragraph SplitText line
+ * reveal → availability + contacts (+ mcp card) fade.
+ *
+ * The status line is split into TWO [data-type-line] spans (not one) so each
+ * keeps its own color — typeOn flattens a line to textContent, which would
+ * destroy nested color spans. Inline spans type in sequence, reading as one
+ * continuous line.
+ */
+const contacts = [
+  { label: 'schedule a call', href: 'https://calendar.app.google/6ukMiHNSgbPLC5YA7', cta: true },
+  { label: 'github', href: 'https://github.com/rnaidu-parallel' },
+  { label: 'linkedin', href: 'https://www.linkedin.com/in/rahul-naidu-siriporam-15472116b' },
+  { label: 'x', href: 'https://x.com/rahulwlw' },
+  { label: 'blog', href: 'https://blog.neuromancer.in' },
+  { label: 'resume', href: 'https://blog.neuromancer.in/resume.pdf' },
+];
+---
+
+<p class="mono answer-status" data-answer="status">
+  <span class="status-tag" data-type-line>[synthesize]</span><span data-type-line> streaming final answer</span>
+</p>
+
+<p class="answer-text" data-answer="text">
+  Founding engineer who has spent four years shipping agentic AI systems to
+  production, and publishes the sharp edges he finds along the way. Worth the
+  conversation.
+</p>
+
+<p class="mono answer-avail" data-answer="avail">
+  <span class="avail-tag">[availability]</span> actively interviewing · agentic ai &amp;
+  llm systems · founding / early-stage · remote (IST)
+</p>
+
+<p class="contacts mono" data-answer="contacts">
+  {
+    contacts.map((c, i) => (
+      <>
+        {i > 0 && <span class="sep" aria-hidden="true"> · </span>}
+        <a href={c.href} class:list={[{ 'contact-cta': c.cta }]}>
+          {c.label}
+        </a>
+      </>
+    ))
+  }
+</p>
+
+<style>
+  .answer-status {
+    color: var(--c-text);
+    margin-bottom: var(--sp-6);
+  }
+  .status-tag {
+    color: var(--c-ok);
+  }
+
+  .answer-text {
+    font-family: var(--font-sans);
+    font-size: var(--fs-h3);
+    line-height: 1.45;
+    color: var(--c-bright);
+  }
+
+  .answer-avail {
+    margin-top: var(--sp-6);
+    color: var(--c-text);
+  }
+  .avail-tag {
+    color: var(--c-cyan);
+  }
+
+  .contacts {
+    margin-top: var(--sp-4);
+    font-size: var(--fs-micro);
+    line-height: 2.4;
+  }
+  .contacts .sep {
+    color: var(--c-dim);
+  }
+
+  /* Primary CTA: amber hairline pill, no fill; amber-dim fill on hover. */
+  .contact-cta {
+    color: var(--c-amber);
+    text-decoration: none;
+    border: 1px solid var(--c-amber);
+    border-radius: 999px;
+    padding: 6px 14px;
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+  .contact-cta:hover {
+    color: var(--c-amber);
+    background: var(--c-amber-dim);
+  }
+</style>

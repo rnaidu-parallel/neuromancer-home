@@ -1,0 +1,166 @@
+---
+/**
+ * McpCard.astro — the MCP easter egg, below the contacts in span 06.
+ *
+ * A Terminal-chrome window (same dots / raised surface / hairline / radius as
+ * Terminal.astro, rebuilt here because Terminal's command+lines API doesn't fit
+ * a JSON block) holding the real, preformatted MCP client config. The <pre> is
+ * the single source of truth: the copy button reads its textContent.
+ *
+ * The interaction script below is deliberately NOT motion-gated — copying must
+ * work for reduced-motion users and independently of GSAP. answer.ts only
+ * fades this card in (non-reduced); with JS off everything is visible and the
+ * config is selectable by hand.
+ */
+const mcpConfig = JSON.stringify(
+  {
+    mcpServers: {
+      rahul: {
+        type: 'http',
+        url: 'https://mcp.neuromancer.in/api/mcp',
+      },
+    },
+  },
+  null,
+  2,
+);
+---
+
+<div class="mcp" data-mcp>
+  <p class="mcp-lede">
+    Or skip the reading. This site has an MCP server: point your agent at it and let
+    it interview him.
+  </p>
+
+  <figure class="mcp-win" role="group" aria-label="mcp client configuration">
+    <div class="mcp-bar">
+      <span class="mcp-dots" aria-hidden="true">
+        <span class="mcp-dot"></span>
+        <span class="mcp-dot"></span>
+        <span class="mcp-dot"></span>
+      </span>
+      <button type="button" class="mono mcp-copy" data-mcp-copy>copy config</button>
+    </div>
+    <pre class="mono mcp-json"><code data-mcp-json>{mcpConfig}</code></pre>
+  </figure>
+
+  <p class="mono mcp-note">
+    works with claude code, cursor, or any mcp client · 8 tools · no signup
+  </p>
+
+  <span class="visually-hidden" aria-live="polite" data-mcp-live></span>
+</div>
+
+<script>
+  // Copy-config interaction. Not motion-gated: must work under reduced motion
+  // and without GSAP. The <pre>'s textContent is the single source of truth.
+  const root = document.querySelector<HTMLElement>('[data-mcp]');
+  const btn = root?.querySelector<HTMLButtonElement>('[data-mcp-copy]');
+  const code = root?.querySelector<HTMLElement>('[data-mcp-json]');
+  const live = root?.querySelector<HTMLElement>('[data-mcp-live]');
+
+  if (btn && code) {
+    const DEFAULT_LABEL = 'copy config';
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const flash = (label: string): void => {
+      btn.textContent = label;
+      if (live) live.textContent = label;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        btn.textContent = DEFAULT_LABEL;
+        if (live) live.textContent = '';
+      }, 2500);
+    };
+
+    const selectFallback = (): void => {
+      const range = document.createRange();
+      range.selectNodeContents(code);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      flash('select + ⌘c');
+    };
+
+    btn.addEventListener('click', () => {
+      const json = code.textContent ?? '';
+      if (window.isSecureContext && navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(json).then(
+          () => flash('copied. point your agent at me'),
+          () => selectFallback(),
+        );
+      } else {
+        selectFallback();
+      }
+    });
+  }
+</script>
+
+<style>
+  .mcp {
+    margin-top: var(--sp-12);
+  }
+
+  .mcp-lede {
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-text);
+    margin-bottom: var(--sp-4);
+  }
+
+  /* Window chrome — visual parity with Terminal.astro. */
+  .mcp-win {
+    background: var(--c-raised);
+    border: 1px solid var(--c-line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .mcp-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-4);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .mcp-dots {
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  .mcp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-line);
+  }
+
+  .mcp-copy {
+    background: none;
+    border: none;
+    padding: var(--sp-1) 0;
+    color: var(--c-cyan);
+    cursor: pointer;
+  }
+  .mcp-copy:hover {
+    color: var(--c-bright);
+  }
+
+  .mcp-json {
+    margin: 0;
+    padding: var(--sp-4) var(--sp-4) var(--sp-6);
+    font-size: var(--fs-small);
+    line-height: 1.6;
+    color: var(--c-text);
+    overflow-x: auto;
+  }
+
+  .mcp-note {
+    margin-top: var(--sp-3);
+    color: var(--c-text);
+    opacity: 0.7;
+  }
+</style>
