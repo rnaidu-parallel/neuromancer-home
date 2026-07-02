@@ -3,6 +3,8 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Span from '../components/Span.astro';
 import SpanNav from '../components/SpanNav.astro';
+import ToolCall from '../components/ToolCall.astro';
+import { projects } from '../data/projects';
 
 const title = 'Rahul Naidu Siriporam — agentic AI engineer';
 const description =
@@ -17,33 +19,8 @@ const plan = [
   { fn: 'synthesize()', desc: 'final answer + how to reach him', to: 'answer', n: '06' },
 ];
 
-// 02 · get_projects() — plain stack now; Phase 3 replaces with terminals.
-const projects = [
-  {
-    name: 'neuromancer-mcp',
-    line: 'Publish yourself as a remote MCP server: a company’s agent connects to learn about you and reach out.',
-    href: 'https://github.com/rnaidu-parallel/neuromancer-mcp',
-    label: 'github.com/rnaidu-parallel/neuromancer-mcp',
-  },
-  {
-    name: 'agent-coercion-layer',
-    line: 'Keep tool calls working when you swap the model underneath an agent.',
-    href: 'https://github.com/rnaidu-parallel/agent-coercion-layer',
-    label: 'github',
-  },
-  {
-    name: 'prompt-cache-economics',
-    line: 'A timestamp in your prompt prefix is a 0% cache hit, and it costs you.',
-    href: 'https://github.com/rnaidu-parallel/prompt-cache-economics',
-    label: 'github',
-  },
-  {
-    name: '6GB-VRAM local agent',
-    line: 'A capable local agent on a 6GB consumer GPU, and the five constraints that decide the stack.',
-    href: 'https://blog.neuromancer.in/blog/6gb-vram-local-agent/',
-    label: 'blog.neuromancer.in/blog/6gb-vram-local-agent/',
-  },
-];
+// 02 · get_projects() — terminals with desktop pin+swap (see scripts/projects.ts).
+//      Data lives in src/data/projects.ts.
 
 // 03 · get_experience() — two entries, plain for now; Phase 4 restyles.
 const experience = [
@@ -98,21 +75,16 @@ const contacts = [
     </Span>
 
     <Span id="projects" index="02" kind="tool_call: get_projects()" branch>
-      <p class="lede">Four things he built and published because the problem was interesting.</p>
+      <p class="projects-intro">
+        Four things he built and published because the problem was interesting.
+      </p>
 
-      <ul class="stack">
-        {
-          projects.map((p) => (
-            <li>
-              <p class="stack-name mono">{p.name}</p>
-              <p class="stack-line">{p.line}</p>
-              <p class="stack-link mono">
-                <a href={p.href}>{p.label}</a>
-              </p>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="projects-stage" data-projects-stage>
+        {projects.map((p) => <ToolCall project={p} />)}
+        <p class="projects-progress mono" data-projects-progress aria-hidden="true">
+          [1/4]
+        </p>
+      </div>
     </Span>
 
     <Span id="experience" index="03" kind="tool_call: get_experience()" branch>
@@ -188,6 +160,9 @@ const contacts = [
     // the matchMedia branch; boot.ts + thread.ts register into it via onMotionReady.
     import '../scripts/boot.ts';
     import '../scripts/thread.ts';
+    // Imported AFTER thread.ts so the pin trigger is created after the thread's
+    // draw triggers; projects.ts calls ScrollTrigger.refresh() to re-sort them.
+    import '../scripts/projects.ts';
   </script>
 </Base>
 
@@ -236,6 +211,42 @@ const contacts = [
     color: var(--c-bright);
   }
 
+  /* 02 · get_projects() — intro + card stack */
+  .projects-intro {
+    color: var(--c-text);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    margin-bottom: var(--sp-12);
+  }
+
+  /* Default (no-JS / reduced / mobile): plain readable vertical stack. The
+     absolute-stacking + progress readout live behind .is-pinned-stage, which
+     projects.ts adds only for desktop + motion. */
+  .projects-stage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-16);
+  }
+
+  .projects-progress {
+    display: none; /* diegetic pin-only UI; shown by .is-pinned-stage */
+    color: var(--c-cyan);
+  }
+
+  .projects-stage.is-pinned-stage {
+    display: block;
+    position: relative;
+  }
+
+  .projects-stage.is-pinned-stage .projects-progress {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    opacity: 0.75;
+  }
+
   /* project / experience stacks */
   .stack {
     list-style: none;
@@ -251,9 +262,6 @@ const contacts = [
   .stack-line {
     color: var(--c-text);
     margin-top: var(--sp-1);
-  }
-  .stack-link {
-    margin-top: var(--sp-2);
   }
   .dim-note {
     color: var(--c-text);

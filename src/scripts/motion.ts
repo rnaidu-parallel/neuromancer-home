@@ -5,9 +5,16 @@
  * everything behind prefers-reduced-motion via gsap.matchMedia().
  *
  * Later-phase scripts should NOT call gsap.matchMedia() again — instead they
- * register callbacks with `onMotionReady(cb)`. Each callback fires once, inside
- * the correct matchMedia branch, receiving `{ reduced }` so it can decide
- * whether to build animations or leave the final DOM state untouched.
+ * register callbacks with `onMotionReady(cb)`. Each callback fires ONCE, inside
+ * the resolved matchMedia branch, receiving `{ reduced, desktop }`:
+ *   - reduced  → prefers-reduced-motion: reduce (no Lenis, no scrubs/pins).
+ *   - desktop  → viewport ≥ 768px at resolve time. Consumers that pin (e.g.
+ *                projects.ts) gate on `desktop && !reduced`.
+ * Both conditions come from a single gsap.matchMedia() conditions object so the
+ * media queries live in one place. onMotionReady is one-shot: `desktop` reflects
+ * the viewport at first resolve and does not re-fire on a later breakpoint cross
+ * (matching the existing boot.ts/thread.ts contract). boot.ts and thread.ts read
+ * only `reduced` and are unaffected.
  */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -21,7 +28,7 @@ declare global {
   }
 }
 
-type MotionCtx = { reduced: boolean };
+type MotionCtx = { reduced: boolean; desktop: boolean };
 type MotionCb = (ctx: MotionCtx) => void;
 
 // Callbacks registered before the branch resolves are queued and flushed once
@@ -45,23 +52,37 @@ function flush(ctx: MotionCtx): void {
 
 export const mm = gsap.matchMedia();
 
-mm.add('(prefers-reduced-motion: no-preference)', () => {
-  const lenis = new Lenis({ autoRaf: false });
+// One conditions object → gsap exposes matching booleans on context.conditions
+// and re-runs the callback when either query flips (running the returned cleanup
+// first). Lenis is set up only when motion is allowed.
+mm.add(
+  {
+    reduced: '(prefers-reduced-motion: reduce)',
+    desktop: '(min-width: 768px)',
+  },
+  (context) => {
+    const { reduced, desktop } = context.conditions as {
+      reduced: boolean;
+      desktop: boolean;
+    };
 
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((t) => lenis.raf(t * 1000));
-  gsap.ticker.lagSmoothing(0);
+    let tick: ((t: number) => void) | null = null;
+    let lenis: Lenis | null = null;
 
-  window.__motion = { reducedMotion: false, lenis: true };
-  flush({ reduced: false });
+    if (!reduced) {
+      lenis = new Lenis({ autoRaf: false });
+      lenis.on('scroll', ScrollTrigger.update);
+      tick = (t) => lenis!.raf(t * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
+    }
 
-  return () => {
-    lenis.destroy();
-  };
-});
+    window.__motion = { reducedMotion: reduced, lenis: !!lenis };
+    flush({ reduced, desktop });
 
-mm.add('(prefers-reduced-motion: reduce)', () => {
-  // No Lenis, no pinned triggers — leave native scroll + final DOM state.
-  window.__motion = { reducedMotion: true, lenis: false };
-  flush({ reduced: true });
-});
+    return () => {
+      if (tick) gsap.ticker.remove(tick);
+      lenis?.destroy();
+    };
+  },
+);

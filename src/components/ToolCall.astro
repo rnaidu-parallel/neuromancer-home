@@ -1,0 +1,103 @@
+---
+/**
+ * ToolCall.astro — one project rendered as an agent tool call: the invocation
+ * line (mono), the human-voice claim (sans prose), the Terminal window, and a
+ * meta row of links.
+ *
+ * On desktop + non-reduced motion these cards are absolutely stacked and swapped
+ * by projects.ts (which adds `.is-pinned-stage` to the parent stage — the
+ * absolute-positioning rule below only bites under that JS-added class). With JS
+ * off / reduced motion / mobile the card is a normal block in a vertical stack.
+ */
+import Terminal from './Terminal.astro';
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+---
+
+<article class="toolcall" data-card>
+  <p class="tc-invoke mono">
+    <span class="tc-kw">tool_call:</span> <span class="tc-args">{project.invocation}</span>
+  </p>
+
+  <p class="tc-name mono">{project.name}</p>
+
+  <p class="tc-claim">{project.claim}</p>
+
+  <Terminal
+    command={project.command}
+    lines={project.output}
+    label={`terminal output for ${project.name}`}
+  />
+
+  <p class="tc-meta mono">
+    {
+      project.links.map((l, i) => (
+        <>
+          {i > 0 && (
+            <span class="sep" aria-hidden="true">
+              {' · '}
+            </span>
+          )}
+          <a href={l.href}>{l.label}</a>
+        </>
+      ))
+    }
+  </p>
+</article>
+
+<style>
+  .toolcall {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .tc-invoke {
+    color: var(--c-text);
+  }
+  .tc-kw {
+    color: var(--c-amber);
+  }
+  .tc-args {
+    color: var(--c-cyan);
+  }
+
+  .tc-name {
+    color: var(--c-bright);
+    font-size: var(--fs-small);
+  }
+
+  .tc-claim {
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-text);
+    max-width: var(--w-prose);
+  }
+
+  .tc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+  .tc-meta a {
+    color: var(--c-cyan);
+  }
+  .tc-meta .sep {
+    color: var(--c-dim);
+    white-space: pre;
+  }
+
+  /* Desktop pin enhancement: absolute-stack the cards ONLY when projects.ts has
+     opted the parent stage into pin mode. Default flow otherwise. Only
+     transform/opacity are animated (the swap). */
+  :global(.projects-stage.is-pinned-stage) .toolcall {
+    position: absolute;
+    inset: 0;
+    will-change: transform, opacity;
+  }
+</style>

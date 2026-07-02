@@ -1,0 +1,112 @@
+---
+/**
+ * Terminal.astro — window chrome + terminal content for a tool result.
+ *
+ * Final-state DOM: the full command line and every output line ship as real
+ * text in the HTML. text-fx `typeOn` (registered by projects.ts, non-reduced
+ * only) captures + hides those lines and replays them; with JS off / reduced
+ * motion the terminal is fully rendered and static. Every typed-on line — the
+ * command AND each output line — carries `data-type-line`; the `$` / `>`
+ * prefixes stay put (aria-hidden decoration).
+ *
+ * The window dots are all neutral --c-line (deliberately NOT macOS traffic
+ * lights). Accessible name comes from the wrapping figure's aria-label.
+ */
+interface Props {
+  command: string;
+  lines: string[];
+  label: string;
+}
+const { command, lines, label } = Astro.props;
+---
+
+<figure class="term" role="group" aria-label={label}>
+  <div class="term-bar" aria-hidden="true">
+    <span class="term-dot"></span>
+    <span class="term-dot"></span>
+    <span class="term-dot"></span>
+  </div>
+
+  <div class="term-body mono">
+    <p class="term-row term-cmd">
+      <span class="term-mark term-prompt" aria-hidden="true">$</span>
+      <span class="term-txt" data-type-line>{command}</span>
+    </p>
+    {
+      lines.map((ln) => (
+        <p class="term-row term-out">
+          <span class="term-mark term-arrow" aria-hidden="true">&gt;</span>
+          <span class="term-txt" data-type-line>{ln}</span>
+        </p>
+      ))
+    }
+  </div>
+</figure>
+
+<style>
+  .term {
+    background: var(--c-raised);
+    border: 1px solid var(--c-line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .term-bar {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: center;
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .term-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-line);
+  }
+
+  /* Body copy is bigger than the default .mono micro — micro is too small for
+     terminal content. Scoped selector (carries an astro attribute) outranks the
+     global .mono font-size. */
+  .term-body {
+    padding: var(--sp-4) var(--sp-4) var(--sp-6);
+    font-size: var(--fs-small);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+  }
+
+  /* Prefix + text as flex items: long lines wrap under the text column, giving
+     a hanging indent past the prefix. */
+  .term-row {
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  .term-mark {
+    flex: none;
+    user-select: none;
+  }
+  .term-prompt {
+    color: var(--c-amber);
+  }
+  .term-arrow {
+    color: var(--c-cyan);
+  }
+
+  .term-txt {
+    flex: 1;
+    min-width: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .term-cmd .term-txt {
+    color: var(--c-bright);
+  }
+  .term-out .term-txt {
+    color: var(--c-text);
+  }
+</style>
