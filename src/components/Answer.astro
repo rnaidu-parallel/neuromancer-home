@@ -43,9 +43,11 @@ const contacts = [
     contacts.map((c, i) => (
       <>
         {i > 0 && <span class="sep" aria-hidden="true"> · </span>}
-        <a href={c.href} class:list={[{ 'contact-cta': c.cta }]}>
-          {c.label}
-        </a>
+        <a
+          href={c.href}
+          class:list={[{ 'contact-cta': c.cta }]}
+          data-magnetic={c.cta ? '' : undefined}
+        >{c.label}</a>
       </>
     ))
   }

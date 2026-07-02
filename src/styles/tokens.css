@@ -13,8 +13,8 @@
   --c-ok: #7dd48a;          /* success/status green, sparing */
 
   /* type */
-  --font-mono: 'Commit Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-sans: 'General Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Commit Mono', 'Commit Mono Fallback', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'General Sans', 'General Sans Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --fs-display: clamp(2.75rem, 1.5rem + 6.25vw, 6.5rem);   /* hero name */
   --fs-h2: clamp(1.75rem, 1.2rem + 2.75vw, 3.25rem);        /* span titles / big moments */
   --fs-h3: clamp(1.25rem, 1.05rem + 1vw, 1.75rem);

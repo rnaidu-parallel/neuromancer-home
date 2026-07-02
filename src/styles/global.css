@@ -14,6 +14,34 @@
   font-display: swap;
 }
 
+/* size-adjust-calibrated local fallbacks — kill CLS while the web fonts load
+   (SplitText re-splits on font-load; matching line-box + advance metrics keeps
+   line breaks/positions stable so nothing reflows on swap).
+   Overrides are the web font's own hhea metrics / unitsPerEm (upm 1000):
+     General Sans  ascent 1010, descent -240  → 101% / 24%
+     Commit Mono   ascent  900, descent -200  →  90% / 20%
+   line-gap-override 0% because every text block here sets an explicit unitless
+   line-height (font line-gap is ignored there). size-adjust 100%: General Sans'
+   cap-height/em (0.718) matches Arial's (0.716) within 0.3%, and Commit Mono's
+   0.600em advance matches Menlo/Courier New (~0.601em) — both inside the
+   98–103% band. (Metrics read directly from the woff2 head/hhea tables.) */
+@font-face {
+  font-family: 'General Sans Fallback';
+  src: local('Arial');
+  size-adjust: 100%;
+  ascent-override: 101%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Commit Mono Fallback';
+  src: local('Menlo'), local('Courier New');
+  size-adjust: 100%;
+  ascent-override: 90%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
 /* --- modern minimal reset --- */
 *,
 *::before,
@@ -141,4 +169,43 @@ a:hover {
   border: 1px solid var(--c-line);
   border-radius: 4px;
   text-decoration: none;
+}
+
+/* --- custom cursor --- */
+/* Only cursor.ts (fine-pointer + non-reduced) adds .has-cursor to <html>; if it
+   never runs, the native cursor stays. Scoped so any failure is safe. */
+.has-cursor,
+.has-cursor * {
+  cursor: none;
+}
+
+/* Ring + dot are created at runtime by cursor.ts; hidden until the first move
+   (opacity animated by gsap). transform/opacity only. */
+.trace-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.trace-cursor-ring {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--c-amber);
+  background: transparent;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.trace-cursor-ring.is-over {
+  background: var(--c-amber-dim);
+}
+
+.trace-cursor-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--c-amber);
 }

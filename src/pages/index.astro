@@ -107,7 +107,10 @@ const plan = [
     // draw triggers; projects.ts calls ScrollTrigger.refresh() to re-sort them.
     import '../scripts/projects.ts';
     import '../scripts/answer.ts';
-  </script>
+    // Cursor + magnetic hover: pure enhancement, self-gated to fine-pointer +
+    // non-reduced-motion inside cursor.ts (via onMotionReady).
+    import '../scripts/cursor.ts';
+</script>
 </Base>
 
 <style>

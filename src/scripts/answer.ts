@@ -59,6 +59,10 @@ onMotionReady(({ reduced }) => {
     type: 'lines',
     mask: 'lines',
     autoSplit: true,
+    // aria 'auto' would pin aria-label on the <p> — prohibited on generic
+    // roles (Lighthouse aria-prohibited-attr). Lines stay real text in DOM
+    // order, so 'none' loses nothing for AT.
+    aria: 'none',
     onSplit(self) {
       gsap.set(self.lines, { yPercent: revealed ? 0 : 110 });
       return undefined;

@@ -8,4 +8,9 @@ export default defineConfig({
   // static output is the default; declared for clarity.
   output: 'static',
   integrations: [sitemap()],
+  build: {
+    // ~19KB of CSS total: inlining removes the render-blocking request
+    // (single-page site, no cross-page cache benefit to a separate file).
+    inlineStylesheets: 'always',
+  },
 });

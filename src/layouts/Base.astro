@@ -11,6 +11,32 @@ interface Props {
 
 const { title, description } = Astro.props;
 const canonical = 'https://neuromancer.in';
+const ogImage = 'https://neuromancer.in/og.png';
+const ogImageAlt =
+  "terminal-style trace: query 'who is rahul?' resolving to founding engineer, agentic AI systems";
+
+// JSON-LD Person — sameAs/contacts mirror Answer.astro's contact list.
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Rahul Naidu Siriporam',
+  jobTitle: 'Founding Software Engineer',
+  url: 'https://neuromancer.in',
+  sameAs: [
+    'https://blog.neuromancer.in',
+    'https://github.com/rnaidu-parallel',
+    'https://www.linkedin.com/in/rahul-naidu-siriporam-15472116b',
+    'https://x.com/rahulwlw',
+  ],
+  worksFor: { '@type': 'Organization', name: 'Canvas AI' },
+  knowsAbout: [
+    'agentic AI systems',
+    'LLM systems',
+    'multi-agent systems',
+    'AI evals',
+    'prompt caching',
+  ],
+};
 ---
 
 <!doctype html>
@@ -22,7 +48,29 @@ const canonical = 'https://neuromancer.in';
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#0d1220" />
-    <!-- meta: extended OG/JSON-LD in phase 6 -->
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content="https://neuromancer.in/" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd)} />
+
     <link
       rel="preload"
       href="/fonts/GeneralSans-Variable.woff2"

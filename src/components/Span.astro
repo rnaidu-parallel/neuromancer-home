@@ -71,7 +71,7 @@ const { id, index, kind, branch = false, terminal = false } = Astro.props;
   }
 
   .span-index {
-    color: var(--c-dim); /* decorative, aria-hidden */
+    color: var(--c-text); /* decorative, aria-hidden; --c-dim fails contrast */
   }
 
   .span-dot {
