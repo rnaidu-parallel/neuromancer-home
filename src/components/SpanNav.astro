@@ -1,0 +1,128 @@
+---
+/**
+ * SpanNav.astro — fixed, desktop-only scrollspy for the six spans.
+ *
+ * Hidden under 1100px (mobile relies on the rail + headers). Native anchors
+ * drive the jumps (scroll-margin-top lives on .span). Scrollspy runs in a plain
+ * module script — it is NOT motion-gated, so it also works for reduced-motion
+ * users. Exactly one item is active once past span 01; before it (hero), none.
+ */
+const items = [
+  { id: 'plan', idx: '01', short: 'plan', kind: 'plan' },
+  { id: 'projects', idx: '02', short: 'get_projects', kind: 'tool_call: get_projects()' },
+  {
+    id: 'experience',
+    idx: '03',
+    short: 'get_experience',
+    kind: 'tool_call: get_experience()',
+  },
+  { id: 'writing', idx: '04', short: 'recall', kind: 'memory: recall("writing")' },
+  { id: 'eval', idx: '05', short: 'eval', kind: 'eval: scoreboard' },
+  { id: 'answer', idx: '06', short: 'answer', kind: 'answer' },
+];
+---
+
+<nav class="span-nav mono" aria-label="trace spans">
+  <ul>
+    {
+      items.map((it) => (
+        <li>
+          <a href={`#${it.id}`} data-spy={it.id} aria-label={it.kind}>
+            <span class="dot" aria-hidden="true">
+              ●
+            </span>
+            <span class="nx" aria-hidden="true">
+              {it.idx}
+            </span>
+            <span class="lbl">{it.short}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .span-nav {
+    position: fixed;
+    right: var(--sp-6);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: var(--z-nav);
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .span-nav {
+      display: block;
+    }
+  }
+
+  .span-nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .span-nav a {
+    display: grid;
+    grid-template-columns: 0.9em 1.4em auto;
+    align-items: baseline;
+    gap: 0.4em;
+    font-size: var(--fs-micro);
+    text-decoration: none;
+    color: var(--c-text);
+    opacity: 0.55;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      opacity var(--dur-fast) var(--ease-out);
+  }
+
+  .span-nav a:hover {
+    opacity: 1;
+  }
+
+  .span-nav .dot {
+    color: var(--c-amber);
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+
+  .span-nav .nx {
+    color: inherit;
+  }
+
+  .span-nav a.is-active {
+    color: var(--c-amber);
+    opacity: 1;
+  }
+
+  .span-nav a.is-active .dot {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Scrollspy — plain module script, runs for all users (not motion-gated).
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('.span-nav a[data-spy]'),
+  );
+  const byId = new Map(links.map((l) => [l.dataset.spy!, l]));
+  const spans = document.querySelectorAll<HTMLElement>('[data-span]');
+
+  if (links.length && spans.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          links.forEach((l) => l.classList.remove('is-active'));
+          byId.get(entry.target.id)?.classList.add('is-active');
+        }
+      },
+      { rootMargin: '-40% 0px -55% 0px' },
+    );
+    spans.forEach((s) => observer.observe(s));
+  }
+</script>

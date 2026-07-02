@@ -1,18 +1,71 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Span from '../components/Span.astro';
+import SpanNav from '../components/SpanNav.astro';
 
 const title = 'Rahul Naidu Siriporam — agentic AI engineer';
 const description =
   'Founding engineer building agentic AI systems. This page is an agent run: scroll to trace the answer to "who is rahul?".';
 
-const spans = [
-  { id: 'plan', label: '01 · plan', heading: 'plan' },
-  { id: 'projects', label: '02 · tool_call', heading: 'tool_call: get_projects()' },
-  { id: 'experience', label: '03 · tool_call', heading: 'tool_call: get_experience()' },
-  { id: 'writing', label: '04 · memory', heading: 'memory: recall("writing")' },
-  { id: 'eval', label: '05 · eval', heading: 'eval: scoreboard' },
-  { id: 'answer', label: '06 · answer', heading: 'answer' },
+// 01 · plan — the run's checklist. Each row links to the span it resolves.
+const plan = [
+  { fn: 'get_projects()', desc: 'what he ships when nobody assigns it', to: 'projects', n: '02' },
+  { fn: 'get_experience()', desc: 'what he has shipped in production', to: 'experience', n: '03' },
+  { fn: 'recall("writing")', desc: 'how he thinks, in his own words', to: 'writing', n: '04' },
+  { fn: 'eval()', desc: 'check the claims against the numbers', to: 'eval', n: '05' },
+  { fn: 'synthesize()', desc: 'final answer + how to reach him', to: 'answer', n: '06' },
+];
+
+// 02 · get_projects() — plain stack now; Phase 3 replaces with terminals.
+const projects = [
+  {
+    name: 'neuromancer-mcp',
+    line: 'Publish yourself as a remote MCP server: a company’s agent connects to learn about you and reach out.',
+    href: 'https://github.com/rnaidu-parallel/neuromancer-mcp',
+    label: 'github.com/rnaidu-parallel/neuromancer-mcp',
+  },
+  {
+    name: 'agent-coercion-layer',
+    line: 'Keep tool calls working when you swap the model underneath an agent.',
+    href: 'https://github.com/rnaidu-parallel/agent-coercion-layer',
+    label: 'github',
+  },
+  {
+    name: 'prompt-cache-economics',
+    line: 'A timestamp in your prompt prefix is a 0% cache hit, and it costs you.',
+    href: 'https://github.com/rnaidu-parallel/prompt-cache-economics',
+    label: 'github',
+  },
+  {
+    name: '6GB-VRAM local agent',
+    line: 'A capable local agent on a 6GB consumer GPU, and the five constraints that decide the stack.',
+    href: 'https://blog.neuromancer.in/blog/6gb-vram-local-agent/',
+    label: 'blog.neuromancer.in/blog/6gb-vram-local-agent/',
+  },
+];
+
+// 03 · get_experience() — two entries, plain for now; Phase 4 restyles.
+const experience = [
+  {
+    role: 'Canvas AI — founding software engineer',
+    when: 'jul 2022 – present',
+    line: 'Founding engineer owning agentic AI products end to end: agentic chat platforms, consumer-health AI serving thousands daily, vision pipelines, and a ClickHouse analytics warehouse.',
+  },
+  {
+    role: 'Quantile Analytics — quantitative analyst',
+    when: 'jul 2021 – jul 2022',
+    line: 'Data pipelines and NLP tooling for systematic equity strategies.',
+  },
+];
+
+const contacts = [
+  { label: 'schedule a call', href: 'https://calendar.app.google/6ukMiHNSgbPLC5YA7' },
+  { label: 'github', href: 'https://github.com/rnaidu-parallel' },
+  { label: 'linkedin', href: 'https://www.linkedin.com/in/rahul-naidu-siriporam-15472116b' },
+  { label: 'x', href: 'https://x.com/rahulwlw' },
+  { label: 'blog', href: 'https://blog.neuromancer.in' },
+  { label: 'resume', href: 'https://blog.neuromancer.in/resume.pdf' },
 ];
 ---
 
@@ -20,24 +73,240 @@ const spans = [
   <main id="main" class="container">
     <Hero />
 
-    {
-      spans.map((span, i) => (
-        <section id={span.id} aria-labelledby={`${span.id}-h`}>
-          <p class="mono">{span.label}</p>
-          <h2 id={`${span.id}-h`}>{span.heading}</h2>
-          <p>Section content lands in phase {i + 1}.</p>
-        </section>
-      ))
-    }
+    <Span id="plan" index="01" kind="plan">
+      <p class="lede">
+        The query names a person. Resolve who he is, what he builds, and whether he’s
+        worth a conversation.
+      </p>
 
-    <footer>
+      <ul class="plan mono">
+        {
+          plan.map((row) => (
+            <li>
+              <span class="pk" aria-hidden="true">
+                [x]
+              </span>
+              <span class="fn">{row.fn}</span>
+              <span class="desc">{row.desc}</span>
+              <a class="goto" href={`#${row.to}`}>
+                → {row.n}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </Span>
+
+    <Span id="projects" index="02" kind="tool_call: get_projects()" branch>
+      <p class="lede">Four things he built and published because the problem was interesting.</p>
+
+      <ul class="stack">
+        {
+          projects.map((p) => (
+            <li>
+              <p class="stack-name mono">{p.name}</p>
+              <p class="stack-line">{p.line}</p>
+              <p class="stack-link mono">
+                <a href={p.href}>{p.label}</a>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </Span>
+
+    <Span id="experience" index="03" kind="tool_call: get_experience()" branch>
+      <ul class="stack">
+        {
+          experience.map((e) => (
+            <li>
+              <p class="stack-name mono">
+                {e.role} · {e.when}
+              </p>
+              <p class="stack-line">{e.line}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </Span>
+
+    <Span id="writing" index="04" kind='memory: recall("writing")'>
+      <p class="lede mono">Retrieving recent writing from blog.neuromancer.in…</p>
+      <ul class="stack">
+        <li><p class="stack-line dim-note mono">(memory hits land in phase 4)</p></li>
+      </ul>
+    </Span>
+
+    <Span id="eval" index="05" kind="eval: scoreboard">
+      <p class="lede">Claims are cheap. Checking the published numbers:</p>
+
+      <table class="scoreboard mono">
+        <tbody>
+          <tr>
+            <td>glucose forecaster</td>
+            <td>94% of 2h-ahead predictions in Clarke Zone A</td>
+          </tr>
+          <tr>
+            <td>vision meal logging</td>
+            <td>10k+ images/day · adoption 24% → 38%</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="stack-line dim-note mono">(full scoreboard lands in phase 4)</p>
+    </Span>
+
+    <Span id="answer" index="06" kind="answer" terminal>
+      <p class="answer-text">
+        Founding engineer who has spent four years shipping agentic AI systems to
+        production, and publishes the sharp edges he finds along the way. Worth the
+        conversation.
+      </p>
+
+      <p class="contacts mono">
+        {
+          contacts.map((c, i) => (
+            <>
+              {i > 0 && <span class="sep" aria-hidden="true"> · </span>}
+              <a href={c.href}>{c.label}</a>
+            </>
+          ))
+        }
+      </p>
+      <p class="stack-line dim-note mono">(mcp easter egg lands in phase 5)</p>
+    </Span>
+
+    <footer class="run-footer">
+      <div aria-hidden="true"></div>
       <p class="mono">[run pending] · spans: 6</p>
     </footer>
   </main>
 
+  <SpanNav />
+
   <script>
-    // Page-specific boot orchestration. motion.ts (global, loaded in Base)
-    // owns the matchMedia branch; boot.ts registers into it via onMotionReady.
+    // Page-specific boot orchestration. motion.ts (global, loaded in Base) owns
+    // the matchMedia branch; boot.ts + thread.ts register into it via onMotionReady.
     import '../scripts/boot.ts';
+    import '../scripts/thread.ts';
   </script>
 </Base>
+
+<style>
+  .lede {
+    color: var(--c-text);
+    font-size: var(--fs-h3);
+    line-height: 1.4;
+  }
+  .lede.mono {
+    font-size: var(--fs-micro);
+    color: var(--c-cyan);
+  }
+
+  /* 01 · plan checklist — mono grid rows */
+  .plan {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .plan li {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: var(--sp-3);
+    align-items: baseline;
+    font-size: var(--fs-micro);
+  }
+  .plan .pk {
+    color: var(--c-ok);
+  }
+  .plan .fn {
+    color: var(--c-bright);
+  }
+  .plan .desc {
+    color: var(--c-text);
+  }
+  .plan .goto {
+    color: var(--c-cyan);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .plan .goto:hover {
+    color: var(--c-bright);
+  }
+
+  /* project / experience stacks */
+  .stack {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+  .stack-name {
+    color: var(--c-bright);
+    font-size: var(--fs-small);
+  }
+  .stack-line {
+    color: var(--c-text);
+    margin-top: var(--sp-1);
+  }
+  .stack-link {
+    margin-top: var(--sp-2);
+  }
+  .dim-note {
+    color: var(--c-text);
+    opacity: 0.7;
+  }
+
+  /* 05 · scoreboard */
+  .scoreboard {
+    margin-top: var(--sp-4);
+    border-collapse: collapse;
+    font-size: var(--fs-micro);
+  }
+  .scoreboard td {
+    padding: var(--sp-2) var(--sp-4) var(--sp-2) 0;
+    border-top: 1px solid var(--c-line);
+    vertical-align: top;
+  }
+  .scoreboard td:first-child {
+    color: var(--c-bright);
+    white-space: nowrap;
+  }
+  .scoreboard td:last-child {
+    color: var(--c-text);
+  }
+
+  /* 06 · answer */
+  .answer-text {
+    font-size: var(--fs-h3);
+    line-height: 1.45;
+    color: var(--c-bright);
+  }
+  .contacts {
+    margin-top: var(--sp-6);
+    font-size: var(--fs-micro);
+    line-height: 2;
+  }
+  .contacts .sep {
+    color: var(--c-dim);
+  }
+
+  /* Footer mirrors the span grid (empty rail column) so its text aligns with
+     span content. The thread terminates at the answer span — no rail here. */
+  .run-footer {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: var(--sp-2);
+    padding-block: var(--sp-16) var(--sp-24);
+    color: var(--c-text);
+  }
+
+  @media (max-width: 767px) {
+    .run-footer {
+      grid-template-columns: var(--rail-m) minmax(0, 1fr);
+    }
+  }
+</style>

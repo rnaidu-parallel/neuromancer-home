@@ -34,6 +34,7 @@
   --w-page: 72rem;           /* outer container */
   --w-prose: 40rem;          /* reading column */
   --rail: 4.5rem;            /* left trace-rail gutter on desktop */
+  --rail-m: 1.75rem;         /* trace-rail gutter on mobile (<768px) */
 
   /* z */
   --z-thread: 1; --z-content: 10; --z-nav: 100; --z-cursor: 200;
