@@ -4,3 +4,7 @@ dist/
 .vercel/
 .DS_Store
 .env*
+
+# local agent/design-skill tooling — not part of the site
+.agents/
+skills-lock.json

@@ -1,260 +1,453 @@
 ---
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import Span from '../components/Span.astro';
-import SpanNav from '../components/SpanNav.astro';
-import ToolCall from '../components/ToolCall.astro';
-import Experience from '../components/Experience.astro';
-import MemoryRecall from '../components/MemoryRecall.astro';
-import EvalBoard from '../components/EvalBoard.astro';
-import Answer from '../components/Answer.astro';
-import McpCard from '../components/McpCard.astro';
-import RunFooter from '../components/RunFooter.astro';
-import { projects } from '../data/projects';
+import stats from '../data/stats.json';
 
-const title = 'Rahul Naidu Siriporam — agentic AI engineer';
-const description =
-  'Founding engineer building agentic AI systems. This page is an agent run: scroll to trace the answer to "who is rahul?".';
+const t = stats.totals;
 
-// 01 · plan — the run's checklist. Each row links to the span it resolves.
-const plan = [
-  { fn: 'get_projects()', desc: 'what he ships when nobody assigns it', to: 'projects', n: '02' },
-  { fn: 'get_experience()', desc: 'what he has shipped in production', to: 'experience', n: '03' },
-  { fn: 'recall("writing")', desc: 'how he thinks, in his own words', to: 'writing', n: '04' },
-  { fn: 'eval()', desc: 'check the claims against the numbers', to: 'eval', n: '05' },
-  { fn: 'synthesize()', desc: 'final answer + how to reach him', to: 'answer', n: '06' },
+// ---- server-side formatting helpers ----
+const full = (n: number) => n.toLocaleString('en-US');
+const compact = (n: number) => {
+  const a = Math.abs(n);
+  if (a >= 1e9) return (n / 1e9).toFixed(2).replace(/\.?0+$/, '') + 'B';
+  if (a >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (a >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(n);
+};
+const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+const pretty = (d: string) =>
+  new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+
+const topModels = stats.byModel.slice(0, 12);
+const restModels = stats.byModel.slice(12);
+const restTokens = restModels.reduce((s, m) => s + m.total, 0);
+const maxModelShare = stats.byModel[0]?.share || 100;
+
+// tools — grayscale ramp (amber/cyan stay reserved for token TYPE, per the thesis)
+const toolMeta: Record<string, { name: string; c: string }> = {
+  claude: { name: 'Claude Code', c: '#dce1e8' },
+  codex: { name: 'Codex', c: '#a7aeba' },
+  cursor: { name: 'Cursor', c: '#7c838f' },
+  opencode: { name: 'opencode', c: '#575e69' },
+  gemini: { name: 'Gemini', c: '#3d4450' },
+};
+
+// composition of the total: authored (amber) vs served-from-cache (cyan).
+// Segments are denominated by the sum of the four categories so the bar is
+// exactly 100% (total_tokens can differ from the component sum by a rounding sliver).
+const comp = [
+  { label: 'cache read', v: t.cacheRead, kind: 'cache' },
+  { label: 'cache write', v: t.cacheCreation, kind: 'cache2' },
+  { label: 'input', v: t.input, kind: 'authored' },
+  { label: 'output', v: t.output, kind: 'authored2' },
 ];
+const compTotal = t.input + t.output + t.cacheRead + t.cacheCreation;
+const authoredPct = ((t.authored / t.total) * 100).toFixed(1);
+const authoredPctRound = Math.round(t.authored / t.total * 100);
 
-// 02 · get_projects() — terminals with desktop pin+swap (see scripts/projects.ts).
-//      Data lives in src/data/projects.ts.
-
-// 03 · get_experience() — structured log blocks (see components/Experience.astro).
-// 04 · recall("writing") — build-time RSS + fallback (see components/MemoryRecall.astro).
-// 05 · eval scoreboard — checked numbers (see components/EvalBoard.astro).
-// 06 · answer — streamed synthesis + contacts + MCP easter egg (see
-//      components/Answer.astro, McpCard.astro, scripts/answer.ts).
+const title = `Rahul Naidu — ${compact(t.total)} tokens of AI agent telemetry`;
+const description =
+  `A black-box readout of one engineer operating AI coding agents at scale: ${compact(t.total)} tokens across ${stats.range.activeDays} days, ${Math.round(t.cachePct)}% served from cache, ${t.leverage}× leverage, ${stats.byModel.length} models. Every figure reproducible from local usage logs.`;
 ---
 
 <Base title={title} description={description}>
-  <main id="main" class="container">
-    <Hero />
+  <header class="bb-top">
+    <div class="wrap wrap-wide bb-top__in">
+      <a href="/" class="bb-mark"><span class="bb-mark__dot" aria-hidden="true"></span>NEUROMANCER</a>
+      <span class="bb-top__meta mono">agent telemetry · updated {pretty(stats.generatedAt)}</span>
+    </div>
+  </header>
 
-    <Span id="plan" index="01" kind="plan">
-      <p class="lede">
-        The query names a person. Resolve who he is, what he builds, and whether he’s
-        worth a conversation.
-      </p>
+  <main id="main">
+    <!-- ============ HERO — the leverage machine ============ -->
+    <section class="bb-hero">
+      <div class="wrap wrap-wide">
+        <p class="eyebrow bb-hero__eyebrow">Rahul Naidu Siriporam · AI coding-agent telemetry</p>
 
-      <ul class="plan mono">
-        {
-          plan.map((row) => (
-            <li>
-              <span class="pk" aria-hidden="true">
-                [x]
-              </span>
-              <span class="fn">{row.fn}</span>
-              <span class="desc">{row.desc}</span>
-              <a class="goto" href={`#${row.to}`}>
-                → {row.n}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </Span>
+        <div class="bb-readout">
+          <div class="bb-readout__num mono" data-count={t.total}>{full(t.total)}</div>
+          <div class="bb-readout__unit">
+            <span class="bb-readout__label">tokens moved</span>
+            <span class="bb-readout__sub mono">{stats.range.activeDays} active days · {full(t.conversations)} conversations · {stats.byModel.length} models · {stats.byTool.length} tools</span>
+          </div>
+        </div>
 
-    <Span id="projects" index="02" kind="tool_call: get_projects()" branch>
-      <p class="projects-intro">
-        Four things he built and published because the problem was interesting.
-      </p>
+        <!-- dual-trace oscilloscope: amber authored (flat) vs cyan cache (towering) -->
+        <figure class="bb-scope" aria-label="Dual-trace readout of daily tokens: a nearly flat amber line for tokens I authored, and a towering cyan line for tokens re-read from cache.">
+          <svg class="bb-scope__svg" preserveAspectRatio="none" viewBox="0 0 1000 160" aria-hidden="true">
+            <defs>
+              <linearGradient id="bb-cache-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="var(--cyan)" stop-opacity="0.32" />
+                <stop offset="1" stop-color="var(--cyan)" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path class="bb-scope__cachefill" d="" />
+            <path class="bb-scope__cache" d="" />
+            <path class="bb-scope__auth" d="" />
+          </svg>
+          <figcaption class="bb-scope__key mono">
+            <span><i class="ln cyan"></i>cache re-read</span>
+            <span><i class="ln amber"></i>authored</span>
+          </figcaption>
+        </figure>
 
-      <div class="projects-stage" data-projects-stage>
-        {projects.map((p) => <ToolCall project={p} />)}
-        <p class="projects-progress mono" data-projects-progress aria-hidden="true">
-          [1/4]
+        <p class="bb-thesis">
+          I authored <b class="amber">{compact(t.authored)}</b> tokens. They moved <b>{compact(t.total)}</b>.
+          <span class="bb-thesis__2">{t.cachePct}% of the work was context re-read from cache — <b class="cyan">{t.leverage}×</b> leverage on every token I actually wrote.</span>
         </p>
+
+        <ul class="bb-keystat" role="list">
+          <li><span class="bb-keystat__v mono cyan">{t.cachePct}%</span><span class="bb-keystat__k">served from cache</span></li>
+          <li><span class="bb-keystat__v mono">{t.leverage}×</span><span class="bb-keystat__k">leverage per authored token</span></li>
+          <li><span class="bb-keystat__v mono ok">{usd(t.estValueUsd)}</span><span class="bb-keystat__k">est. API value</span></li>
+        </ul>
       </div>
-    </Span>
+    </section>
 
-    <Span id="experience" index="03" kind="tool_call: get_experience()" branch>
-      <Experience />
-    </Span>
+    <!-- ============ COMPOSITION ============ -->
+    <section class="bb-sec">
+      <div class="wrap wrap-wide">
+        <div class="bb-head">
+          <h2 class="bb-head__t">The {authoredPctRound}% that did the steering</h2>
+          <p class="bb-head__d">Every token by origin. The amber sliver is everything I typed. The cyan expanse is working memory the models re-read — the same context, reactivated thousands of times.</p>
+        </div>
+        <div class="bb-comp" role="img" aria-label={`Token composition: ${authoredPct}% authored, ${t.cachePct}% cache read, the rest cache write`}>
+          {comp.map((c) => (
+            <div class:list={['bb-comp__seg', `is-${c.kind}`]} style={`--w:${(c.v / compTotal) * 100}%`} title={`${c.label}: ${compact(c.v)}`}></div>
+          ))}
+        </div>
+        <div class="bb-comp__legend mono">
+          <span><i class="dot amber"></i>authored — input + output · {compact(t.authored)} · {authoredPct}%</span>
+          <span><i class="dot cyan"></i>cache read · {compact(t.cacheRead)} · {t.cachePct}%</span>
+          <span><i class="dot cyan2"></i>cache write · {compact(t.cacheCreation)}</span>
+        </div>
+      </div>
+    </section>
 
-    <Span id="writing" index="04" kind='memory: recall("writing")'>
-      <MemoryRecall />
-    </Span>
+    <!-- ============ USAGE (range-switchable) ============ -->
+    <section class="bb-sec bb-sec--alt">
+      <div class="wrap wrap-wide">
+        <div class="bb-head bb-head--row">
+          <div>
+            <h2 class="bb-head__t">Throughput</h2>
+            <p class="bb-head__d">Daily tokens over the selected window.</p>
+          </div>
+          <div class="bb-tabs" role="tablist" aria-label="Time range">
+            <button class="bb-tab" role="tab" data-range="7" aria-selected="false" tabindex="-1">7D</button>
+            <button class="bb-tab" role="tab" data-range="30" aria-selected="true" tabindex="0">30D</button>
+            <button class="bb-tab" role="tab" data-range="90" aria-selected="false" tabindex="-1">90D</button>
+            <button class="bb-tab" role="tab" data-range="all" aria-selected="false" tabindex="-1">ALL</button>
+          </div>
+        </div>
 
-    <Span id="eval" index="05" kind="eval: scoreboard">
-      <EvalBoard />
-    </Span>
+        <div class="bb-tiles">
+          <div class="bb-tile"><span class="bb-tile__v mono" data-tile="total">—</span><span class="bb-tile__k">tokens · <span data-tile="rangelabel">30d</span></span></div>
+          <div class="bb-tile"><span class="bb-tile__v mono" data-tile="avg">—</span><span class="bb-tile__k">per active day</span></div>
+          <div class="bb-tile"><span class="bb-tile__v mono" data-tile="convs">—</span><span class="bb-tile__k">conversations</span></div>
+          <div class="bb-tile"><span class="bb-tile__v mono" data-tile="days">—</span><span class="bb-tile__k">active days</span></div>
+        </div>
 
-    <Span id="answer" index="06" kind="answer" terminal>
-      <Answer />
-      <McpCard />
-    </Span>
+        <div class="bb-trend">
+          <div class="bb-trend__bars" id="bb-trend-bars" role="img" aria-label="Daily token usage for the selected range"></div>
+          <div class="bb-trend__axis mono"><span id="bb-trend-from"></span><span id="bb-trend-peak"></span><span id="bb-trend-to"></span></div>
+        </div>
+      </div>
+    </section>
 
-    <RunFooter />
+    <!-- ============ MODELS ============ -->
+    <section class="bb-sec">
+      <div class="wrap wrap-wide">
+        <div class="bb-head">
+          <h2 class="bb-head__t">Models <span class="bb-head__n mono">{stats.byModel.length}</span></h2>
+          <p class="bb-head__d">One operator, routed across every frontier model and a long tail of the cheap and the fast.</p>
+        </div>
+        <ol class="bb-models" role="list">
+          {topModels.map((m, i) => (
+            <li class="bb-model">
+              <span class="bb-model__rank mono">{String(i + 1).padStart(2, '0')}</span>
+              <span class="bb-model__name mono">{m.model}</span>
+              <span class="bb-model__bar"><span class="bb-model__fill" style={`--w:${(m.share / maxModelShare) * 100}%`}></span></span>
+              <span class="bb-model__tok mono">{compact(m.total)}</span>
+              <span class="bb-model__pct mono">{m.share}%</span>
+            </li>
+          ))}
+        </ol>
+        {restModels.length > 0 && (
+          <details class="bb-more">
+            <summary class="mono">{restModels.length} more models · {compact(restTokens)} tokens</summary>
+            <ol class="bb-models bb-models--rest" role="list">
+              {restModels.map((m, i) => (
+                <li class="bb-model">
+                  <span class="bb-model__rank mono">{String(i + 13).padStart(2, '0')}</span>
+                  <span class="bb-model__name mono">{m.model}</span>
+                  <span class="bb-model__bar"><span class="bb-model__fill" style={`--w:${(m.share / maxModelShare) * 100}%`}></span></span>
+                  <span class="bb-model__tok mono">{compact(m.total)}</span>
+                  <span class="bb-model__pct mono">{m.share}%</span>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )}
+      </div>
+    </section>
+
+    <!-- ============ TOOLS ============ -->
+    <section class="bb-sec bb-sec--alt">
+      <div class="wrap wrap-wide">
+        <div class="bb-head">
+          <h2 class="bb-head__t">Tools</h2>
+          <p class="bb-head__d">Where the tokens were spent — every agent in the rotation.</p>
+        </div>
+        <div class="bb-toolbar" role="img" aria-label="Share of tokens by tool">
+          {stats.byTool.map((tool) => (
+            <div class="bb-toolbar__seg" style={`--w:${tool.share}%; --c:${toolMeta[tool.source]?.c || 'var(--dim)'}`}></div>
+          ))}
+        </div>
+        <ul class="bb-tools" role="list">
+          {stats.byTool.map((tool) => (
+            <li class="bb-tool">
+              <i class="bb-tool__dot" style={`background:${toolMeta[tool.source]?.c || 'var(--dim)'}`}></i>
+              <span class="bb-tool__name">{toolMeta[tool.source]?.name || tool.source}</span>
+              <span class="bb-tool__pct mono">{tool.share}%</span>
+              <span class="bb-tool__tok mono">{compact(tool.total)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ HEATMAP ============ -->
+    <section class="bb-sec">
+      <div class="wrap wrap-wide">
+        <div class="bb-head">
+          <h2 class="bb-head__t">Activity</h2>
+          <p class="bb-head__d">{stats.range.activeDays} active days, {pretty(stats.range.from)} → {pretty(stats.range.to)}. Peak {compact(stats.peak.total)} tokens on {pretty(stats.peak.date)}.</p>
+        </div>
+        <div class="bb-heat">
+          <div class="bb-heat__scroll">
+            <div class="bb-heat__months mono" id="bb-heat-months"></div>
+            <div class="bb-heat__body">
+              <div class="bb-heat__days mono"><span>Mon</span><span>Wed</span><span>Fri</span></div>
+              <div class="bb-heat__grid" id="bb-heat-grid"></div>
+            </div>
+          </div>
+          <div class="bb-heat__legend mono">
+            <span>less</span>
+            <i class="bb-heat__k" data-l="0"></i><i class="bb-heat__k" data-l="1"></i>
+            <i class="bb-heat__k" data-l="2"></i><i class="bb-heat__k" data-l="3"></i><i class="bb-heat__k" data-l="4"></i>
+            <span>more</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DAILY LEDGER ============ -->
+    <section class="bb-sec bb-sec--alt">
+      <div class="wrap wrap-wide">
+        <div class="bb-head">
+          <h2 class="bb-head__t">Daily ledger</h2>
+          <p class="bb-head__d">The selected range, most recent first. Input barely moves; cache does the heavy lifting — that gap is the whole story.</p>
+        </div>
+        <div class="bb-table__scroll">
+          <table class="bb-table mono">
+            <thead>
+              <tr><th class="l">Date</th><th>Total</th><th>Input</th><th>Output</th><th>Cached</th><th>Convs</th></tr>
+            </thead>
+            <tbody id="bb-table-body"></tbody>
+          </table>
+        </div>
+        <button class="bb-more__btn mono" id="bb-table-more" hidden>show all in range</button>
+      </div>
+    </section>
+
+    <!-- ============ IDENTITY / FOOTER ============ -->
+    <footer class="bb-foot">
+      <div class="wrap wrap-wide">
+        <div class="bb-foot__grid">
+          <div class="bb-foot__who">
+            <p class="eyebrow">The operator</p>
+            <h2 class="bb-foot__name">Rahul Naidu Siriporam</h2>
+            <p class="bb-foot__bio">Founding software engineer building agentic AI systems. The readout above is one engineer's daily practice — what it actually looks like to run coding agents at scale, not just talk about them.</p>
+            <nav class="bb-foot__links" aria-label="Contact and profiles">
+              <a href="https://github.com/rnaidu-parallel" rel="me">GitHub</a>
+              <a href="https://www.linkedin.com/in/rahul-naidu-siriporam-15472116b" rel="me">LinkedIn</a>
+              <a href="https://x.com/rahulwlw" rel="me" aria-label="Rahul on X (Twitter)">X</a>
+              <a href="https://blog.neuromancer.in">Blog</a>
+              <a href="https://mcp.neuromancer.in">Résumé&nbsp;MCP</a>
+            </nav>
+          </div>
+          <aside class="bb-foot__method">
+            <p class="eyebrow">What this is</p>
+            <p class="bb-foot__mtxt mono">Aggregate token counts from my local agent logs — Claude Code, Codex, Cursor, opencode, Gemini. Counts and dates only: no prompts, no code, no project names. Dollar value is computed from published per-model pricing ({t.valueCoveragePct}% priced), not money literally spent.</p>
+            <p class="bb-foot__mtxt mono">It's a measure of volume, tool breadth, cache reuse, and sustained agent workflow — not of output quality. Every figure is regenerated by a script in this repo and committed as static JSON.</p>
+          </aside>
+        </div>
+        <p class="bb-foot__legal mono">neuromancer.in · snapshot {pretty(stats.generatedAt)} · built with Astro · <a href="https://github.com/rnaidu-parallel/neuromancer-home" aria-label="Source code for this site on GitHub">source</a></p>
+      </div>
+    </footer>
   </main>
 
-  <SpanNav />
-
+  <script type="application/json" id="bb-data" set:html={JSON.stringify({ daily: stats.daily })} />
   <script>
-    // Page-specific boot orchestration. motion.ts (global, loaded in Base) owns
-    // the matchMedia branch; boot.ts + thread.ts register into it via onMotionReady.
-    import '../scripts/boot.ts';
-    import '../scripts/thread.ts';
-    // Imported AFTER thread.ts so the pin trigger is created after the thread's
-    // draw triggers; projects.ts calls ScrollTrigger.refresh() to re-sort them.
-    import '../scripts/projects.ts';
-    import '../scripts/answer.ts';
-    // Cursor + magnetic hover: pure enhancement, self-gated to fine-pointer +
-    // non-reduced-motion inside cursor.ts (via onMotionReady).
-    import '../scripts/cursor.ts';
-</script>
-
-  <script>
-    // 01 · plan checklist tick-in. Final-state DOM ships every row [x] (no-JS =
-    // all checked). Non-reduced only: rewind to [ ] at runtime, then tick each
-    // row in sequence with a brief green flash. The [x]/[ ] glyph is aria-hidden,
-    // so mutating it is invisible to AT.
-    import { ScrollTrigger } from 'gsap/ScrollTrigger';
-    import { onMotionReady } from '../scripts/motion';
-
-    onMotionReady(({ reduced }) => {
-      if (reduced) return;
-      const list = document.querySelector<HTMLElement>('#plan .plan');
-      if (!list) return;
-      const rows = Array.from(list.querySelectorAll<HTMLElement>('li'));
-      const pks = rows.map((r) => r.querySelector<HTMLElement>('.pk'));
-      if (!rows.length) return;
-
-      // Rewind to unchecked synchronously (runtime pre-state).
-      pks.forEach((pk) => pk && (pk.textContent = '[ ]'));
-
-      ScrollTrigger.create({
-        trigger: '#plan',
-        start: 'top 75%',
-        once: true,
-        onEnter: () => {
-          rows.forEach((row, i) => {
-            window.setTimeout(() => {
-              const pk = pks[i];
-              if (pk) pk.textContent = '[x]';
-              row.classList.add('is-ticked');
-              window.setTimeout(() => row.classList.remove('is-ticked'), 300);
-            }, i * 180);
-          });
-        },
-      });
-    });
+    import '../scripts/telemetry.ts';
   </script>
+
+  <style is:global>
+    /* ===================== TOP BAR ===================== */
+    .bb-top { border-bottom: 1px solid var(--line-2); }
+    .bb-top__in { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .bb-mark { font-family: var(--mono); font-size: var(--fs-sm); letter-spacing: 0.22em; color: var(--bright); display: inline-flex; align-items: center; gap: 0.6rem; }
+    .bb-mark__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 10px var(--amber-glow); animation: bb-pulse 3.5s var(--ease-io) infinite; }
+    @keyframes bb-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+    .bb-top__meta { font-size: var(--fs-micro); color: var(--dim); letter-spacing: 0.04em; }
+    @media (max-width: 560px) { .bb-top__meta { display: none; } }
+
+    /* ===================== HERO ===================== */
+    .bb-hero { padding: clamp(3rem, 8vw, 6.5rem) 0 var(--s10); }
+    .bb-hero__eyebrow { margin-bottom: clamp(1.5rem, 5vw, 3rem); }
+    .bb-readout { display: flex; align-items: flex-end; gap: clamp(1rem, 3vw, 2.5rem); flex-wrap: wrap; }
+    .bb-readout__num { font-size: var(--fs-mega); font-weight: 700; line-height: 0.9; color: var(--bright); letter-spacing: var(--ls-mega); font-variant-numeric: tabular-nums; text-shadow: 0 0 60px rgba(255, 180, 46, 0.08); }
+    .bb-readout__unit { display: flex; flex-direction: column; gap: 0.3rem; padding-bottom: 0.6rem; }
+    .bb-readout__label { font-size: var(--fs-h3); color: var(--text); font-weight: 500; }
+    .bb-readout__sub { font-size: var(--fs-xs); color: var(--dim); letter-spacing: 0.02em; }
+
+    .bb-scope { position: relative; margin: clamp(1.5rem, 4vw, 2.75rem) 0 clamp(1.75rem, 4vw, 2.5rem); height: 160px; border-bottom: 1px solid var(--line); }
+    .bb-scope__svg { width: 100%; height: 100%; overflow: visible; }
+    .bb-scope__cache { fill: none; stroke: var(--cyan); stroke-width: 2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px var(--cyan-glow)); }
+    .bb-scope__cachefill { fill: url(#bb-cache-grad); }
+    .bb-scope__auth { fill: none; stroke: var(--amber); stroke-width: 2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px var(--amber-glow)); }
+    .bb-scope__key { position: absolute; top: 0; right: 0; display: flex; gap: 1rem; font-size: var(--fs-micro); color: var(--dim); }
+    .bb-scope__key .ln { display: inline-block; width: 14px; height: 2px; margin-right: 0.4rem; vertical-align: middle; }
+    .ln.cyan { background: var(--cyan); } .ln.amber { background: var(--amber); }
+
+    .bb-thesis { font-size: clamp(1.15rem, 0.9rem + 1.4vw, 1.9rem); line-height: 1.35; color: var(--bright); font-weight: 500; max-width: 24ch; letter-spacing: -0.01em; }
+    .bb-thesis b { font-weight: 700; }
+    .bb-thesis__2 { display: block; margin-top: 0.5rem; color: var(--text); font-weight: 400; font-size: 0.8em; max-width: 44ch; }
+    .amber { color: var(--amber); } .cyan { color: var(--cyan); } .ok { color: var(--ok); }
+
+    .bb-keystat { list-style: none; padding: 0; display: flex; gap: clamp(1.5rem, 5vw, 3.5rem); margin-top: clamp(1.75rem, 4vw, 2.5rem); flex-wrap: wrap; }
+    .bb-keystat li { display: flex; flex-direction: column; gap: 0.2rem; }
+    .bb-keystat__v { font-size: clamp(1.5rem, 1rem + 2vw, 2.4rem); font-weight: 700; color: var(--bright); }
+    .bb-keystat__k { font-size: var(--fs-xs); color: var(--dim); letter-spacing: 0.04em; max-width: 16ch; }
+
+    /* ===================== SECTION SHELL ===================== */
+    .bb-sec { padding: clamp(3rem, 7vw, 5.5rem) 0; border-top: 1px solid var(--line-2); }
+    .bb-sec--alt { background: var(--ink-1); }
+    .bb-head { margin-bottom: clamp(1.75rem, 4vw, 2.75rem); max-width: 60ch; }
+    .bb-head--row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; max-width: none; flex-wrap: wrap; }
+    .bb-head__t { font-size: var(--fs-h2); display: flex; align-items: baseline; gap: 0.7rem; }
+    .bb-head__n { font-size: var(--fs-sm); color: var(--amber); font-weight: 400; }
+    .bb-head__d { margin-top: 0.6rem; color: var(--text); font-size: var(--fs-sm); line-height: 1.55; }
+
+    /* ===================== COMPOSITION ===================== */
+    .bb-comp { display: flex; height: clamp(56px, 12vw, 92px); border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--line); background: var(--panel); }
+    .bb-comp__seg { width: var(--w); min-width: 2px; transition: filter var(--dur-1) var(--ease); }
+    .bb-comp__seg.is-cache { background: linear-gradient(180deg, var(--cyan), #3ea6bd); }
+    .bb-comp__seg.is-cache2 { background: linear-gradient(180deg, #2f7d8e, #245c68); }
+    .bb-comp__seg.is-authored { background: linear-gradient(180deg, var(--amber-soft), var(--amber)); }
+    .bb-comp__seg.is-authored2 { background: linear-gradient(180deg, #fff0d0, var(--amber-soft)); }
+    .bb-comp__seg:hover { filter: brightness(1.25); }
+    .bb-comp__legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; margin-top: 1rem; font-size: var(--fs-xs); color: var(--dim); }
+    .bb-comp__legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 0.5rem; }
+    .dot.amber { background: var(--amber); } .dot.cyan { background: var(--cyan); } .dot.cyan2 { background: #2f7d8e; }
+
+    /* ===================== TABS + TILES + TREND ===================== */
+    .bb-tabs { display: inline-flex; gap: 2px; padding: 3px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+    .bb-tab { font-family: var(--mono); font-size: var(--fs-xs); letter-spacing: 0.08em; color: var(--dim); padding: 0.4rem 0.85rem; border-radius: 7px; transition: all var(--dur-1) var(--ease); }
+    .bb-tab:hover { color: var(--text); }
+    .bb-tab[aria-selected='true'] { background: var(--amber-dim); color: var(--amber); }
+
+    .bb-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(0.5rem, 1.5vw, 1rem); margin-bottom: clamp(1.5rem, 3vw, 2rem); }
+    .bb-tile { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: clamp(0.9rem, 2vw, 1.35rem); display: flex; flex-direction: column; gap: 0.35rem; }
+    .bb-tile__v { font-size: clamp(1.1rem, 0.7rem + 2vw, 1.9rem); font-weight: 700; color: var(--bright); }
+    .bb-tile__k { font-size: var(--fs-micro); color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    @media (max-width: 620px) { .bb-tiles { grid-template-columns: repeat(2, 1fr); } }
+
+    .bb-trend { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1rem, 2.5vw, 1.75rem); }
+    .bb-trend__bars { display: flex; align-items: flex-end; gap: 2px; height: clamp(120px, 22vw, 200px); }
+    .bb-trend__bar { flex: 1 1 0; min-width: 0; background: linear-gradient(180deg, var(--amber), #9c6414); border-radius: 2px 2px 0 0; min-height: 2px; height: var(--h); position: relative; transition: filter var(--dur-1); }
+    .bb-trend__bar:hover { filter: brightness(1.4); }
+    .bb-trend__bar[data-peak='true'] { background: linear-gradient(180deg, var(--cyan-soft), var(--cyan)); }
+    .bb-trend__bar::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-6px); background: var(--panel-2); border: 1px solid var(--line); color: var(--bright); font-family: var(--mono); font-size: var(--fs-micro); white-space: nowrap; padding: 0.3rem 0.5rem; border-radius: 5px; opacity: 0; pointer-events: none; transition: opacity var(--dur-1); z-index: 5; }
+    .bb-trend__bar:hover::after, .bb-trend__bar:focus-visible::after { opacity: 1; }
+    .bb-trend__axis { display: flex; justify-content: space-between; margin-top: 0.75rem; font-size: var(--fs-micro); color: var(--dim); }
+
+    /* ===================== MODELS (grayscale — color reserved for token type) ===================== */
+    .bb-models { list-style: none; padding: 0; display: flex; flex-direction: column; }
+    .bb-model { display: grid; grid-template-columns: 2ch minmax(9ch, 1.4fr) 3fr auto auto; align-items: center; gap: clamp(0.5rem, 1.5vw, 1.1rem); padding: 0.62rem 0; border-bottom: 1px solid var(--line-2); }
+    .bb-model__rank { font-size: var(--fs-micro); color: var(--faint); }
+    .bb-model__name { font-size: var(--fs-sm); color: var(--bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bb-model__bar { height: 6px; background: var(--line-2); border-radius: 3px; overflow: hidden; }
+    .bb-model__fill { display: block; height: 100%; width: var(--w); background: linear-gradient(90deg, #3a4048, #aeb6c2); border-radius: 3px; transform-origin: left; }
+    .bb-model__tok { font-size: var(--fs-xs); color: var(--text); text-align: right; min-width: 5ch; }
+    .bb-model__pct { font-size: var(--fs-xs); color: var(--dim); text-align: right; min-width: 4ch; }
+    @media (max-width: 620px) {
+      .bb-model { grid-template-columns: 1.6ch minmax(8ch, 1fr) auto; grid-template-areas: 'r n p' 'r b b'; row-gap: 0.35rem; }
+      .bb-model__rank { grid-area: r; } .bb-model__name { grid-area: n; } .bb-model__pct { grid-area: p; }
+      .bb-model__bar { grid-area: b; } .bb-model__tok { display: none; }
+    }
+    .bb-more { margin-top: 1rem; }
+    .bb-more summary { font-size: var(--fs-xs); color: var(--dim); cursor: pointer; padding: 0.5rem 0; list-style: none; }
+    .bb-more summary::-webkit-details-marker { display: none; }
+    .bb-more summary::before { content: '▸ '; color: var(--amber); }
+    .bb-more[open] summary::before { content: '▾ '; }
+    .bb-more summary:hover { color: var(--text); }
+
+    /* ===================== TOOLS (grayscale) ===================== */
+    .bb-toolbar { display: flex; height: 44px; border-radius: var(--radius-sm); overflow: hidden; gap: 2px; margin-bottom: 1.25rem; }
+    .bb-toolbar__seg { width: var(--w); min-width: 3px; background: var(--c); }
+    .bb-tools { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem 1.5rem; }
+    .bb-tool { display: flex; align-items: center; gap: 0.6rem; font-size: var(--fs-sm); }
+    .bb-tool__dot { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+    .bb-tool__name { color: var(--text); }
+    .bb-tool__pct { color: var(--bright); margin-left: auto; }
+    .bb-tool__tok { color: var(--dim); font-size: var(--fs-xs); min-width: 5ch; text-align: right; }
+
+    /* ===================== HEATMAP ===================== */
+    .bb-heat__scroll { overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; }
+    .bb-heat__months { display: flex; gap: 0; margin-left: 30px; font-size: var(--fs-micro); color: var(--dim); height: 14px; position: relative; }
+    .bb-heat__months span { position: absolute; }
+    .bb-heat__body { display: flex; gap: 6px; margin-top: 2px; width: max-content; }
+    .bb-heat__days { display: flex; flex-direction: column; justify-content: space-between; font-size: 9px; color: var(--faint); width: 24px; padding: 12px 0 2px; }
+    .bb-heat__grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 12px); grid-auto-columns: 12px; gap: 3px; }
+    .bb-heat__cell { width: 12px; height: 12px; border-radius: 2px; }
+    .bb-heat__cell[data-l='0'] { background: #14161b; }
+    .bb-heat__cell[data-l='1'] { background: rgba(255,180,46,0.22); }
+    .bb-heat__cell[data-l='2'] { background: rgba(255,180,46,0.42); }
+    .bb-heat__cell[data-l='3'] { background: rgba(255,180,46,0.68); }
+    .bb-heat__cell[data-l='4'] { background: var(--amber); box-shadow: 0 0 6px var(--amber-glow); }
+    .bb-heat__cell[data-empty='true'] { background: transparent; }
+    .bb-heat__legend { display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 0.75rem; font-size: var(--fs-micro); color: var(--dim); }
+    .bb-heat__k { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+    .bb-heat__k[data-l='0'] { background: #14161b; } .bb-heat__k[data-l='1'] { background: rgba(255,180,46,0.22); }
+    .bb-heat__k[data-l='2'] { background: rgba(255,180,46,0.42); } .bb-heat__k[data-l='3'] { background: rgba(255,180,46,0.68); }
+    .bb-heat__k[data-l='4'] { background: var(--amber); }
+
+    /* ===================== LEDGER TABLE ===================== */
+    .bb-table__scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+    .bb-table { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); min-width: 460px; }
+    .bb-table th { text-align: right; padding: 0.7rem 1rem; color: var(--dim); font-weight: 400; font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--line); }
+    .bb-table th.l, .bb-table td.l { text-align: left; }
+    .bb-table td { text-align: right; padding: 0.6rem 1rem; color: var(--text); border-bottom: 1px solid var(--line-2); }
+    .bb-table tr:hover td { background: var(--panel-2); }
+    .bb-table td.l { color: var(--bright); }
+    .bb-table .cache { color: var(--cyan); }
+    .bb-more__btn { display: block; margin: 1rem auto 0; color: var(--amber); font-size: var(--fs-xs); padding: 0.6rem 1.2rem; border: 1px solid var(--line); border-radius: 8px; }
+    .bb-more__btn:hover { background: var(--panel); }
+
+    /* ===================== FOOTER ===================== */
+    .bb-foot { padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(2rem, 5vw, 3.5rem); border-top: 1px solid var(--line); }
+    .bb-foot__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(2rem, 5vw, 4rem); }
+    @media (max-width: 720px) { .bb-foot__grid { grid-template-columns: 1fr; } }
+    .bb-foot__name { font-size: var(--fs-h1); margin: 0.5rem 0 1rem; }
+    .bb-foot__bio { color: var(--text); max-width: 42ch; line-height: 1.6; }
+    .bb-foot__links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.5rem; }
+    .bb-foot__links a { font-family: var(--mono); font-size: var(--fs-sm); color: var(--text); border-bottom: 1px solid transparent; padding-bottom: 2px; transition: all var(--dur-1); }
+    .bb-foot__links a:hover { color: var(--amber); border-color: var(--amber); }
+    .bb-foot__method { border-left: 1px solid var(--line); padding-left: clamp(1.25rem, 3vw, 2rem); display: flex; flex-direction: column; gap: 0.9rem; }
+    @media (max-width: 720px) { .bb-foot__method { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 1.5rem; } }
+    .bb-foot__mtxt { font-size: var(--fs-xs); color: var(--dim); line-height: 1.7; }
+    .bb-foot__legal { margin-top: clamp(2.5rem, 6vw, 4rem); font-size: var(--fs-micro); color: var(--faint); letter-spacing: 0.04em; }
+    .bb-foot__legal a { color: var(--dim); border-bottom: 1px solid var(--line); }
+    .bb-foot__legal a:hover { color: var(--amber); }
+  </style>
 </Base>
-
-<style>
-  /* Content sits ABOVE the Flux grid/glow (z 0) and BELOW the CRT pass (z 5),
-     which whispers over the text like a real screen. z-index 1 (not --z-content)
-     is deliberate: it keeps #main under the CRT layer while span-content's own
-     z-index:var(--z-content) still orders correctly inside this context. */
-  #main {
-    position: relative;
-    z-index: 1;
-  }
-
-  .lede {
-    color: var(--c-text);
-    font-size: var(--fs-h3);
-    line-height: 1.4;
-  }
-
-  /* 01 · plan checklist — mono grid rows */
-  .plan {
-    list-style: none;
-    padding: 0;
-    margin-top: var(--sp-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-2);
-  }
-  .plan li {
-    display: grid;
-    grid-template-columns: auto auto 1fr auto;
-    gap: var(--sp-3);
-    align-items: baseline;
-    font-size: var(--fs-micro);
-  }
-  .plan .pk {
-    color: var(--c-ok);
-  }
-  .plan .fn {
-    color: var(--c-bright);
-  }
-  .plan .desc {
-    color: var(--c-text);
-  }
-  .plan .goto {
-    color: var(--c-cyan);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .plan .goto:hover {
-    color: var(--c-bright);
-  }
-
-  /* Row flashes green the instant it ticks (see the plan-tick script). */
-  .plan li .fn {
-    transition: color var(--dur-fast) var(--ease-out);
-  }
-  .plan li.is-ticked .fn {
-    color: var(--c-ok);
-  }
-
-  /* Hover language (pointer-fine only): the goto arrow nudges toward its target. */
-  @media (pointer: fine) {
-    .plan .goto {
-      transition:
-        color var(--dur-fast) var(--ease-out),
-        transform var(--dur-fast) var(--ease-out);
-    }
-    .plan .goto:hover {
-      transform: translateX(3px);
-    }
-  }
-
-  /* 02 · get_projects() — intro + card stack */
-  .projects-intro {
-    color: var(--c-text);
-    font-size: var(--fs-body);
-    line-height: 1.5;
-    margin-bottom: var(--sp-12);
-  }
-
-  /* Default (no-JS / reduced / mobile): plain readable vertical stack. The
-     absolute-stacking + progress readout live behind .is-pinned-stage, which
-     projects.ts adds only for desktop + motion. */
-  .projects-stage {
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-16);
-  }
-
-  .projects-progress {
-    display: none; /* diegetic pin-only UI; shown by .is-pinned-stage */
-    color: var(--c-cyan);
-  }
-
-  .projects-stage.is-pinned-stage {
-    display: block;
-    position: relative;
-  }
-
-  .projects-stage.is-pinned-stage .projects-progress {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 2;
-    opacity: 0.75;
-  }
-
-  /* 06 · answer + footer live in Answer/McpCard/RunFooter components. */
-</style>

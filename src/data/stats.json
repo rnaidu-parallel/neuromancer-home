@@ -1,0 +1,1660 @@
+{
+  "generatedAt": "2026-07-07",
+  "range": {
+    "from": "2025-06-18",
+    "to": "2026-07-07",
+    "activeDays": 144
+  },
+  "totals": {
+    "total": 3764561952,
+    "input": 54177179,
+    "output": 20400787,
+    "cacheRead": 3476669236,
+    "cacheCreation": 213594924,
+    "reasoning": 546638,
+    "authored": 74577966,
+    "conversations": 8126,
+    "cachePct": 92.4,
+    "leverage": 50.5,
+    "estValueUsd": 3377,
+    "valueCoveragePct": 94.5
+  },
+  "peak": {
+    "date": "2026-07-01",
+    "total": 319232062,
+    "convs": 741
+  },
+  "byModel": [
+    {
+      "model": "claude-opus-4-8",
+      "total": 2132553912,
+      "share": 56.6,
+      "valueUsd": 1675.12
+    },
+    {
+      "model": "claude-fable-5",
+      "total": 697416869,
+      "share": 18.5,
+      "valueUsd": 999.96
+    },
+    {
+      "model": "claude-sonnet-5",
+      "total": 386791343,
+      "share": 10.3,
+      "valueUsd": 380.14
+    },
+    {
+      "model": "gpt-5.5",
+      "total": 204292279,
+      "share": 5.4,
+      "valueUsd": 227.1
+    },
+    {
+      "model": "claude-sonnet-4-6",
+      "total": 112858653,
+      "share": 3,
+      "valueUsd": 82.31
+    },
+    {
+      "model": "claude-4-sonnet-thinking",
+      "total": 53201369,
+      "share": 1.4,
+      "valueUsd": 0
+    },
+    {
+      "model": "claude-4.5-opus-high-thinking",
+      "total": 43222309,
+      "share": 1.1,
+      "valueUsd": 0
+    },
+    {
+      "model": "glm-5.1",
+      "total": 37847341,
+      "share": 1,
+      "valueUsd": 0
+    },
+    {
+      "model": "gpt-5.4",
+      "total": 19788711,
+      "share": 0.5,
+      "valueUsd": 11.09
+    },
+    {
+      "model": "minimax-m2.7",
+      "total": 18065130,
+      "share": 0.5,
+      "valueUsd": 0
+    },
+    {
+      "model": "claude-4.5-sonnet-thinking",
+      "total": 15484452,
+      "share": 0.4,
+      "valueUsd": 0
+    },
+    {
+      "model": "claude-4-sonnet",
+      "total": 13909582,
+      "share": 0.4,
+      "valueUsd": 0
+    },
+    {
+      "model": "auto",
+      "total": 11392064,
+      "share": 0.3,
+      "valueUsd": 0
+    },
+    {
+      "model": "grok-code-fast-1",
+      "total": 7692283,
+      "share": 0.2,
+      "valueUsd": 0
+    },
+    {
+      "model": "minimax-m2.5-free",
+      "total": 2438615,
+      "share": 0.1,
+      "valueUsd": 0
+    },
+    {
+      "model": "gpt-5.4-mini",
+      "total": 2265396,
+      "share": 0.1,
+      "valueUsd": 0.39
+    },
+    {
+      "model": "gpt-5.3-codex",
+      "total": 1086944,
+      "share": 0,
+      "valueUsd": 0.54
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "total": 1082689,
+      "share": 0,
+      "valueUsd": 0
+    },
+    {
+      "model": "gemini-2.5-pro-preview-05-06",
+      "total": 952878,
+      "share": 0,
+      "valueUsd": 0
+    },
+    {
+      "model": "gemini-3-flash-preview",
+      "total": 698238,
+      "share": 0,
+      "valueUsd": 0.24
+    },
+    {
+      "model": "gemini-2.5-pro-latest",
+      "total": 551515,
+      "share": 0,
+      "valueUsd": 0
+    },
+    {
+      "model": "gpt-5",
+      "total": 358603,
+      "share": 0,
+      "valueUsd": 0.4
+    },
+    {
+      "model": "north-mini-code-free",
+      "total": 345017,
+      "share": 0,
+      "valueUsd": 0
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "total": 109136,
+      "share": 0,
+      "valueUsd": 0
+    },
+    {
+      "model": "gemini-2.5-pro-preview-06-05",
+      "total": 94730,
+      "share": 0,
+      "valueUsd": 0
+    },
+    {
+      "model": "gpt-5.2",
+      "total": 60473,
+      "share": 0,
+      "valueUsd": 0.06
+    },
+    {
+      "model": "claude-3.5-sonnet",
+      "total": 1421,
+      "share": 0,
+      "valueUsd": 0
+    }
+  ],
+  "byTool": [
+    {
+      "source": "claude",
+      "total": 3329620777,
+      "share": 88.4
+    },
+    {
+      "source": "codex",
+      "total": 227433330,
+      "share": 6
+    },
+    {
+      "source": "cursor",
+      "total": 146921679,
+      "share": 3.9
+    },
+    {
+      "source": "opencode",
+      "total": 59887928,
+      "share": 1.6
+    },
+    {
+      "source": "gemini",
+      "total": 698238,
+      "share": 0
+    }
+  ],
+  "daily": [
+    {
+      "date": "2025-06-18",
+      "total": 15507,
+      "input": 11282,
+      "output": 426,
+      "cacheRead": 3799,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-06-19",
+      "total": 37283,
+      "input": 4937,
+      "output": 1512,
+      "cacheRead": 7598,
+      "cacheCreation": 23236,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-06-23",
+      "total": 23235,
+      "input": 387,
+      "output": 1088,
+      "cacheRead": 3799,
+      "cacheCreation": 17961,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-06-24",
+      "total": 1078010,
+      "input": 18339,
+      "output": 18304,
+      "cacheRead": 810033,
+      "cacheCreation": 231334,
+      "reasoning": 0,
+      "convs": 7
+    },
+    {
+      "date": "2025-06-25",
+      "total": 21256,
+      "input": 655,
+      "output": 330,
+      "cacheRead": 17351,
+      "cacheCreation": 2920,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-06-26",
+      "total": 181888,
+      "input": 2768,
+      "output": 4191,
+      "cacheRead": 90830,
+      "cacheCreation": 84099,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-06-27",
+      "total": 37116,
+      "input": 3307,
+      "output": 994,
+      "cacheRead": 4205,
+      "cacheCreation": 28610,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-06-30",
+      "total": 3892525,
+      "input": 7297,
+      "output": 23733,
+      "cacheRead": 3567006,
+      "cacheCreation": 294489,
+      "reasoning": 0,
+      "convs": 6
+    },
+    {
+      "date": "2025-07-02",
+      "total": 1075536,
+      "input": 135621,
+      "output": 33040,
+      "cacheRead": 807820,
+      "cacheCreation": 99055,
+      "reasoning": 0,
+      "convs": 20
+    },
+    {
+      "date": "2025-07-03",
+      "total": 23379,
+      "input": 4365,
+      "output": 1552,
+      "cacheRead": 17462,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-07-06",
+      "total": 64260,
+      "input": 18109,
+      "output": 1902,
+      "cacheRead": 43568,
+      "cacheCreation": 681,
+      "reasoning": 0,
+      "convs": 3
+    },
+    {
+      "date": "2025-07-07",
+      "total": 22281,
+      "input": 4259,
+      "output": 984,
+      "cacheRead": 17038,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-07-10",
+      "total": 22716,
+      "input": 4517,
+      "output": 131,
+      "cacheRead": 18068,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-07-13",
+      "total": 83132,
+      "input": 952,
+      "output": 1859,
+      "cacheRead": 57379,
+      "cacheCreation": 22942,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-07-16",
+      "total": 649291,
+      "input": 756,
+      "output": 21128,
+      "cacheRead": 308138,
+      "cacheCreation": 319269,
+      "reasoning": 0,
+      "convs": 9
+    },
+    {
+      "date": "2025-07-17",
+      "total": 1153583,
+      "input": 71431,
+      "output": 28091,
+      "cacheRead": 795472,
+      "cacheCreation": 258589,
+      "reasoning": 0,
+      "convs": 14
+    },
+    {
+      "date": "2025-07-23",
+      "total": 41914,
+      "input": 7701,
+      "output": 969,
+      "cacheRead": 33244,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-07-25",
+      "total": 32367,
+      "input": 5399,
+      "output": 2277,
+      "cacheRead": 24691,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 3
+    },
+    {
+      "date": "2025-07-28",
+      "total": 32157,
+      "input": 3616,
+      "output": 205,
+      "cacheRead": 28336,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-07-29",
+      "total": 755327,
+      "input": 70156,
+      "output": 21030,
+      "cacheRead": 603912,
+      "cacheCreation": 60229,
+      "reasoning": 0,
+      "convs": 9
+    },
+    {
+      "date": "2025-08-04",
+      "total": 46715,
+      "input": 20,
+      "output": 2271,
+      "cacheRead": 23444,
+      "cacheCreation": 20980,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-08-06",
+      "total": 25248,
+      "input": 21,
+      "output": 2880,
+      "cacheRead": 16108,
+      "cacheCreation": 6239,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-08-13",
+      "total": 127272,
+      "input": 7538,
+      "output": 15507,
+      "cacheRead": 93160,
+      "cacheCreation": 11067,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-08-21",
+      "total": 440186,
+      "input": 4461,
+      "output": 8617,
+      "cacheRead": 392567,
+      "cacheCreation": 34541,
+      "reasoning": 0,
+      "convs": 5
+    },
+    {
+      "date": "2025-08-22",
+      "total": 114877,
+      "input": 61,
+      "output": 3458,
+      "cacheRead": 82716,
+      "cacheCreation": 28642,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-08-24",
+      "total": 3239326,
+      "input": 5617,
+      "output": 40898,
+      "cacheRead": 2979326,
+      "cacheCreation": 213485,
+      "reasoning": 0,
+      "convs": 12
+    },
+    {
+      "date": "2025-08-25",
+      "total": 133997,
+      "input": 880,
+      "output": 11359,
+      "cacheRead": 76482,
+      "cacheCreation": 45276,
+      "reasoning": 0,
+      "convs": 3
+    },
+    {
+      "date": "2025-08-26",
+      "total": 357133,
+      "input": 4727,
+      "output": 7767,
+      "cacheRead": 306389,
+      "cacheCreation": 38250,
+      "reasoning": 0,
+      "convs": 5
+    },
+    {
+      "date": "2025-08-27",
+      "total": 655967,
+      "input": 7127,
+      "output": 59838,
+      "cacheRead": 392873,
+      "cacheCreation": 196129,
+      "reasoning": 0,
+      "convs": 13
+    },
+    {
+      "date": "2025-08-28",
+      "total": 522218,
+      "input": 56105,
+      "output": 14579,
+      "cacheRead": 351242,
+      "cacheCreation": 100292,
+      "reasoning": 0,
+      "convs": 10
+    },
+    {
+      "date": "2025-09-04",
+      "total": 335932,
+      "input": 156,
+      "output": 8349,
+      "cacheRead": 294702,
+      "cacheCreation": 32725,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-09-05",
+      "total": 5353250,
+      "input": 22491,
+      "output": 73592,
+      "cacheRead": 4640603,
+      "cacheCreation": 616564,
+      "reasoning": 0,
+      "convs": 33
+    },
+    {
+      "date": "2025-09-06",
+      "total": 1061185,
+      "input": 10631,
+      "output": 36097,
+      "cacheRead": 891035,
+      "cacheCreation": 123422,
+      "reasoning": 0,
+      "convs": 12
+    },
+    {
+      "date": "2025-09-07",
+      "total": 14658757,
+      "input": 153070,
+      "output": 155303,
+      "cacheRead": 13431241,
+      "cacheCreation": 919143,
+      "reasoning": 0,
+      "convs": 34
+    },
+    {
+      "date": "2025-09-08",
+      "total": 8762872,
+      "input": 54975,
+      "output": 72292,
+      "cacheRead": 7974217,
+      "cacheCreation": 661388,
+      "reasoning": 0,
+      "convs": 14
+    },
+    {
+      "date": "2025-09-09",
+      "total": 2335193,
+      "input": 7328,
+      "output": 25172,
+      "cacheRead": 1987128,
+      "cacheCreation": 315565,
+      "reasoning": 0,
+      "convs": 11
+    },
+    {
+      "date": "2025-09-10",
+      "total": 1508147,
+      "input": 12797,
+      "output": 29644,
+      "cacheRead": 1177753,
+      "cacheCreation": 287953,
+      "reasoning": 0,
+      "convs": 8
+    },
+    {
+      "date": "2025-09-11",
+      "total": 5414719,
+      "input": 39797,
+      "output": 69489,
+      "cacheRead": 4575997,
+      "cacheCreation": 729436,
+      "reasoning": 0,
+      "convs": 25
+    },
+    {
+      "date": "2025-09-12",
+      "total": 2916271,
+      "input": 17742,
+      "output": 47246,
+      "cacheRead": 2550827,
+      "cacheCreation": 300456,
+      "reasoning": 0,
+      "convs": 16
+    },
+    {
+      "date": "2025-09-13",
+      "total": 297130,
+      "input": 37,
+      "output": 4903,
+      "cacheRead": 270433,
+      "cacheCreation": 21757,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-09-15",
+      "total": 525429,
+      "input": 30,
+      "output": 6261,
+      "cacheRead": 496253,
+      "cacheCreation": 22885,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-09-17",
+      "total": 107322,
+      "input": 522,
+      "output": 3997,
+      "cacheRead": 96637,
+      "cacheCreation": 6166,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-09-18",
+      "total": 155073,
+      "input": 2225,
+      "output": 3810,
+      "cacheRead": 118628,
+      "cacheCreation": 30410,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-09-22",
+      "total": 111217,
+      "input": 75,
+      "output": 2665,
+      "cacheRead": 101300,
+      "cacheCreation": 7177,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-09-23",
+      "total": 3589842,
+      "input": 62110,
+      "output": 73336,
+      "cacheRead": 3099333,
+      "cacheCreation": 355063,
+      "reasoning": 0,
+      "convs": 23
+    },
+    {
+      "date": "2025-09-24",
+      "total": 6304240,
+      "input": 28328,
+      "output": 77164,
+      "cacheRead": 6054761,
+      "cacheCreation": 143987,
+      "reasoning": 0,
+      "convs": 9
+    },
+    {
+      "date": "2025-09-25",
+      "total": 127345,
+      "input": 34,
+      "output": 1968,
+      "cacheRead": 74246,
+      "cacheCreation": 51097,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-09-30",
+      "total": 161022,
+      "input": 5934,
+      "output": 3257,
+      "cacheRead": 144809,
+      "cacheCreation": 7022,
+      "reasoning": 0,
+      "convs": 3
+    },
+    {
+      "date": "2025-10-06",
+      "total": 80847,
+      "input": 1466,
+      "output": 5363,
+      "cacheRead": 57701,
+      "cacheCreation": 16317,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-10-07",
+      "total": 596945,
+      "input": 59137,
+      "output": 6480,
+      "cacheRead": 531328,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 3
+    },
+    {
+      "date": "2025-10-13",
+      "total": 149381,
+      "input": 25362,
+      "output": 10099,
+      "cacheRead": 113920,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-10-14",
+      "total": 121563,
+      "input": 7348,
+      "output": 10791,
+      "cacheRead": 103424,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-10-24",
+      "total": 87659,
+      "input": 17058,
+      "output": 9673,
+      "cacheRead": 60928,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-11-03",
+      "total": 91636,
+      "input": 46,
+      "output": 2363,
+      "cacheRead": 79761,
+      "cacheCreation": 9466,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-11-04",
+      "total": 330065,
+      "input": 3295,
+      "output": 6239,
+      "cacheRead": 295631,
+      "cacheCreation": 24900,
+      "reasoning": 0,
+      "convs": 5
+    },
+    {
+      "date": "2025-11-06",
+      "total": 3599306,
+      "input": 2339,
+      "output": 60573,
+      "cacheRead": 3214477,
+      "cacheCreation": 321917,
+      "reasoning": 0,
+      "convs": 8
+    },
+    {
+      "date": "2025-11-07",
+      "total": 56445,
+      "input": 2820,
+      "output": 3577,
+      "cacheRead": 42499,
+      "cacheCreation": 7549,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-11-10",
+      "total": 3763344,
+      "input": 24854,
+      "output": 53275,
+      "cacheRead": 3395592,
+      "cacheCreation": 289623,
+      "reasoning": 0,
+      "convs": 9
+    },
+    {
+      "date": "2025-11-11",
+      "total": 26088,
+      "input": 20,
+      "output": 1160,
+      "cacheRead": 16648,
+      "cacheCreation": 8260,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-11-13",
+      "total": 2191973,
+      "input": 43042,
+      "output": 38589,
+      "cacheRead": 1869099,
+      "cacheCreation": 241243,
+      "reasoning": 0,
+      "convs": 17
+    },
+    {
+      "date": "2025-11-14",
+      "total": 135543,
+      "input": 2946,
+      "output": 12363,
+      "cacheRead": 109008,
+      "cacheCreation": 11226,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-11-18",
+      "total": 550379,
+      "input": 4316,
+      "output": 9116,
+      "cacheRead": 478744,
+      "cacheCreation": 58203,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-11-21",
+      "total": 659238,
+      "input": 4672,
+      "output": 16107,
+      "cacheRead": 588747,
+      "cacheCreation": 49712,
+      "reasoning": 0,
+      "convs": 7
+    },
+    {
+      "date": "2025-11-24",
+      "total": 523959,
+      "input": 185,
+      "output": 8826,
+      "cacheRead": 479249,
+      "cacheCreation": 35699,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-11-25",
+      "total": 92628,
+      "input": 882,
+      "output": 1303,
+      "cacheRead": 73489,
+      "cacheCreation": 16954,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-11-26",
+      "total": 642748,
+      "input": 13603,
+      "output": 7996,
+      "cacheRead": 602003,
+      "cacheCreation": 19146,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-11-27",
+      "total": 215316,
+      "input": 40652,
+      "output": 2374,
+      "cacheRead": 134560,
+      "cacheCreation": 37730,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-12-03",
+      "total": 249053,
+      "input": 1451,
+      "output": 3554,
+      "cacheRead": 218385,
+      "cacheCreation": 25663,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-12-04",
+      "total": 277956,
+      "input": 78,
+      "output": 3599,
+      "cacheRead": 249077,
+      "cacheCreation": 25202,
+      "reasoning": 0,
+      "convs": 3
+    },
+    {
+      "date": "2025-12-08",
+      "total": 94725,
+      "input": 32,
+      "output": 1544,
+      "cacheRead": 86817,
+      "cacheCreation": 6332,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-12-11",
+      "total": 757229,
+      "input": 26348,
+      "output": 16375,
+      "cacheRead": 615213,
+      "cacheCreation": 99293,
+      "reasoning": 0,
+      "convs": 7
+    },
+    {
+      "date": "2025-12-12",
+      "total": 10058858,
+      "input": 52272,
+      "output": 33095,
+      "cacheRead": 9686595,
+      "cacheCreation": 286896,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-12-13",
+      "total": 403230,
+      "input": 1298,
+      "output": 11083,
+      "cacheRead": 364944,
+      "cacheCreation": 25905,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2025-12-17",
+      "total": 96865,
+      "input": 27,
+      "output": 1409,
+      "cacheRead": 89299,
+      "cacheCreation": 6130,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2025-12-21",
+      "total": 789938,
+      "input": 8697,
+      "output": 18222,
+      "cacheRead": 630147,
+      "cacheCreation": 132872,
+      "reasoning": 0,
+      "convs": 12
+    },
+    {
+      "date": "2025-12-22",
+      "total": 99423,
+      "input": 28,
+      "output": 1305,
+      "cacheRead": 52932,
+      "cacheCreation": 45158,
+      "reasoning": 0,
+      "convs": 2
+    },
+    {
+      "date": "2025-12-23",
+      "total": 3055500,
+      "input": 13294,
+      "output": 46849,
+      "cacheRead": 2799105,
+      "cacheCreation": 196252,
+      "reasoning": 0,
+      "convs": 16
+    },
+    {
+      "date": "2025-12-24",
+      "total": 631517,
+      "input": 1251,
+      "output": 8287,
+      "cacheRead": 556892,
+      "cacheCreation": 65087,
+      "reasoning": 0,
+      "convs": 5
+    },
+    {
+      "date": "2026-01-05",
+      "total": 1186668,
+      "input": 7794,
+      "output": 16153,
+      "cacheRead": 1087903,
+      "cacheCreation": 74818,
+      "reasoning": 0,
+      "convs": 13
+    },
+    {
+      "date": "2026-01-06",
+      "total": 6757858,
+      "input": 25269,
+      "output": 82807,
+      "cacheRead": 5756348,
+      "cacheCreation": 893434,
+      "reasoning": 0,
+      "convs": 28
+    },
+    {
+      "date": "2026-01-07",
+      "total": 6104296,
+      "input": 28216,
+      "output": 118525,
+      "cacheRead": 5233292,
+      "cacheCreation": 724263,
+      "reasoning": 0,
+      "convs": 28
+    },
+    {
+      "date": "2026-01-08",
+      "total": 7809871,
+      "input": 84948,
+      "output": 89533,
+      "cacheRead": 6745695,
+      "cacheCreation": 889695,
+      "reasoning": 0,
+      "convs": 38
+    },
+    {
+      "date": "2026-01-09",
+      "total": 3456376,
+      "input": 54225,
+      "output": 64325,
+      "cacheRead": 2898798,
+      "cacheCreation": 439028,
+      "reasoning": 0,
+      "convs": 29
+    },
+    {
+      "date": "2026-01-13",
+      "total": 6298421,
+      "input": 446733,
+      "output": 83799,
+      "cacheRead": 5174409,
+      "cacheCreation": 593480,
+      "reasoning": 0,
+      "convs": 27
+    },
+    {
+      "date": "2026-01-15",
+      "total": 10967956,
+      "input": 964155,
+      "output": 124433,
+      "cacheRead": 8926400,
+      "cacheCreation": 952968,
+      "reasoning": 0,
+      "convs": 49
+    },
+    {
+      "date": "2026-01-16",
+      "total": 525648,
+      "input": 14778,
+      "output": 7164,
+      "cacheRead": 444672,
+      "cacheCreation": 59034,
+      "reasoning": 0,
+      "convs": 4
+    },
+    {
+      "date": "2026-01-19",
+      "total": 1216036,
+      "input": 0,
+      "output": 22725,
+      "cacheRead": 942720,
+      "cacheCreation": 250591,
+      "reasoning": 0,
+      "convs": 11
+    },
+    {
+      "date": "2026-01-22",
+      "total": 2857165,
+      "input": 1540953,
+      "output": 16702,
+      "cacheRead": 1269056,
+      "cacheCreation": 30454,
+      "reasoning": 0,
+      "convs": 8
+    },
+    {
+      "date": "2026-01-23",
+      "total": 573009,
+      "input": 194455,
+      "output": 4346,
+      "cacheRead": 374208,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 6
+    },
+    {
+      "date": "2026-01-25",
+      "total": 64347,
+      "input": 0,
+      "output": 917,
+      "cacheRead": 53248,
+      "cacheCreation": 10182,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2026-02-18",
+      "total": 44023,
+      "input": 11079,
+      "output": 1584,
+      "cacheRead": 31360,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 1
+    },
+    {
+      "date": "2026-03-29",
+      "total": 14825,
+      "input": 8603,
+      "output": 13,
+      "cacheRead": 6122,
+      "cacheCreation": 0,
+      "reasoning": 87,
+      "convs": 2
+    },
+    {
+      "date": "2026-04-06",
+      "total": 1599684,
+      "input": 457337,
+      "output": 9764,
+      "cacheRead": 1138049,
+      "cacheCreation": 0,
+      "reasoning": 9285,
+      "convs": 48
+    },
+    {
+      "date": "2026-04-10",
+      "total": 3591166,
+      "input": 1278965,
+      "output": 31689,
+      "cacheRead": 2277381,
+      "cacheCreation": 0,
+      "reasoning": 7509,
+      "convs": 75
+    },
+    {
+      "date": "2026-04-12",
+      "total": 1784130,
+      "input": 853148,
+      "output": 9790,
+      "cacheRead": 917242,
+      "cacheCreation": 0,
+      "reasoning": 7153,
+      "convs": 38
+    },
+    {
+      "date": "2026-04-13",
+      "total": 32839858,
+      "input": 12086158,
+      "output": 154134,
+      "cacheRead": 20167522,
+      "cacheCreation": 432044,
+      "reasoning": 0,
+      "convs": 369
+    },
+    {
+      "date": "2026-04-14",
+      "total": 2429156,
+      "input": 458250,
+      "output": 33306,
+      "cacheRead": 1937600,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 42
+    },
+    {
+      "date": "2026-04-15",
+      "total": 6992549,
+      "input": 1251049,
+      "output": 54836,
+      "cacheRead": 5685379,
+      "cacheCreation": 0,
+      "reasoning": 2881,
+      "convs": 180
+    },
+    {
+      "date": "2026-04-16",
+      "total": 9639470,
+      "input": 529639,
+      "output": 43768,
+      "cacheRead": 9065984,
+      "cacheCreation": 0,
+      "reasoning": 79,
+      "convs": 128
+    },
+    {
+      "date": "2026-04-21",
+      "total": 704196,
+      "input": 114615,
+      "output": 8365,
+      "cacheRead": 581216,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 26
+    },
+    {
+      "date": "2026-04-22",
+      "total": 1665144,
+      "input": 540420,
+      "output": 25054,
+      "cacheRead": 1099670,
+      "cacheCreation": 0,
+      "reasoning": 0,
+      "convs": 32
+    },
+    {
+      "date": "2026-04-23",
+      "total": 1472549,
+      "input": 268350,
+      "output": 9486,
+      "cacheRead": 1194713,
+      "cacheCreation": 0,
+      "reasoning": 346,
+      "convs": 20
+    },
+    {
+      "date": "2026-04-24",
+      "total": 12637723,
+      "input": 607416,
+      "output": 64651,
+      "cacheRead": 11965656,
+      "cacheCreation": 0,
+      "reasoning": 20574,
+      "convs": 116
+    },
+    {
+      "date": "2026-04-25",
+      "total": 1473347,
+      "input": 214597,
+      "output": 2942,
+      "cacheRead": 1255808,
+      "cacheCreation": 0,
+      "reasoning": 1229,
+      "convs": 7
+    },
+    {
+      "date": "2026-05-01",
+      "total": 732342,
+      "input": 62493,
+      "output": 5273,
+      "cacheRead": 664576,
+      "cacheCreation": 0,
+      "reasoning": 1435,
+      "convs": 16
+    },
+    {
+      "date": "2026-05-08",
+      "total": 4628816,
+      "input": 398796,
+      "output": 22916,
+      "cacheRead": 4207104,
+      "cacheCreation": 0,
+      "reasoning": 9493,
+      "convs": 44
+    },
+    {
+      "date": "2026-05-11",
+      "total": 3770966,
+      "input": 239133,
+      "output": 14905,
+      "cacheRead": 3516928,
+      "cacheCreation": 0,
+      "reasoning": 6267,
+      "convs": 48
+    },
+    {
+      "date": "2026-05-13",
+      "total": 1701407,
+      "input": 170203,
+      "output": 13764,
+      "cacheRead": 1517440,
+      "cacheCreation": 0,
+      "reasoning": 7098,
+      "convs": 25
+    },
+    {
+      "date": "2026-05-18",
+      "total": 675246,
+      "input": 88669,
+      "output": 9297,
+      "cacheRead": 577280,
+      "cacheCreation": 0,
+      "reasoning": 4899,
+      "convs": 18
+    },
+    {
+      "date": "2026-05-22",
+      "total": 1687902,
+      "input": 150009,
+      "output": 12389,
+      "cacheRead": 1525504,
+      "cacheCreation": 0,
+      "reasoning": 5523,
+      "convs": 34
+    },
+    {
+      "date": "2026-06-02",
+      "total": 7074795,
+      "input": 662781,
+      "output": 35054,
+      "cacheRead": 6376960,
+      "cacheCreation": 0,
+      "reasoning": 20381,
+      "convs": 56
+    },
+    {
+      "date": "2026-06-05",
+      "total": 64083592,
+      "input": 65308,
+      "output": 269804,
+      "cacheRead": 62152506,
+      "cacheCreation": 1595974,
+      "reasoning": 0,
+      "convs": 42
+    },
+    {
+      "date": "2026-06-06",
+      "total": 39387827,
+      "input": 77417,
+      "output": 283597,
+      "cacheRead": 38365074,
+      "cacheCreation": 661739,
+      "reasoning": 0,
+      "convs": 64
+    },
+    {
+      "date": "2026-06-07",
+      "total": 52042436,
+      "input": 110261,
+      "output": 270117,
+      "cacheRead": 49965048,
+      "cacheCreation": 1697010,
+      "reasoning": 0,
+      "convs": 80
+    },
+    {
+      "date": "2026-06-08",
+      "total": 237883949,
+      "input": 309589,
+      "output": 1392705,
+      "cacheRead": 231449402,
+      "cacheCreation": 4732253,
+      "reasoning": 0,
+      "convs": 178
+    },
+    {
+      "date": "2026-06-09",
+      "total": 258708422,
+      "input": 1228882,
+      "output": 898626,
+      "cacheRead": 250634139,
+      "cacheCreation": 5946775,
+      "reasoning": 0,
+      "convs": 140
+    },
+    {
+      "date": "2026-06-10",
+      "total": 172552853,
+      "input": 255526,
+      "output": 817712,
+      "cacheRead": 168088422,
+      "cacheCreation": 3391193,
+      "reasoning": 0,
+      "convs": 250
+    },
+    {
+      "date": "2026-06-11",
+      "total": 49458741,
+      "input": 140427,
+      "output": 298961,
+      "cacheRead": 47222277,
+      "cacheCreation": 1797076,
+      "reasoning": 0,
+      "convs": 126
+    },
+    {
+      "date": "2026-06-12",
+      "total": 193461110,
+      "input": 238727,
+      "output": 818802,
+      "cacheRead": 190039505,
+      "cacheCreation": 2364076,
+      "reasoning": 0,
+      "convs": 172
+    },
+    {
+      "date": "2026-06-13",
+      "total": 20112947,
+      "input": 107522,
+      "output": 146426,
+      "cacheRead": 18904898,
+      "cacheCreation": 954101,
+      "reasoning": 0,
+      "convs": 39
+    },
+    {
+      "date": "2026-06-14",
+      "total": 13188138,
+      "input": 91636,
+      "output": 109947,
+      "cacheRead": 12458856,
+      "cacheCreation": 527699,
+      "reasoning": 0,
+      "convs": 32
+    },
+    {
+      "date": "2026-06-15",
+      "total": 42486081,
+      "input": 118041,
+      "output": 234143,
+      "cacheRead": 40271910,
+      "cacheCreation": 1861987,
+      "reasoning": 0,
+      "convs": 95
+    },
+    {
+      "date": "2026-06-16",
+      "total": 78701601,
+      "input": 152685,
+      "output": 339680,
+      "cacheRead": 76578947,
+      "cacheCreation": 1630289,
+      "reasoning": 0,
+      "convs": 76
+    },
+    {
+      "date": "2026-06-17",
+      "total": 72825610,
+      "input": 936789,
+      "output": 376844,
+      "cacheRead": 68545280,
+      "cacheCreation": 2966697,
+      "reasoning": 0,
+      "convs": 70
+    },
+    {
+      "date": "2026-06-18",
+      "total": 72199030,
+      "input": 173873,
+      "output": 514336,
+      "cacheRead": 69525521,
+      "cacheCreation": 1985300,
+      "reasoning": 0,
+      "convs": 128
+    },
+    {
+      "date": "2026-06-19",
+      "total": 162772972,
+      "input": 107215,
+      "output": 567098,
+      "cacheRead": 159711421,
+      "cacheCreation": 2387238,
+      "reasoning": 0,
+      "convs": 75
+    },
+    {
+      "date": "2026-06-20",
+      "total": 8019723,
+      "input": 34886,
+      "output": 81912,
+      "cacheRead": 7315581,
+      "cacheCreation": 587344,
+      "reasoning": 0,
+      "convs": 40
+    },
+    {
+      "date": "2026-06-21",
+      "total": 43399684,
+      "input": 161921,
+      "output": 302286,
+      "cacheRead": 41238585,
+      "cacheCreation": 1696892,
+      "reasoning": 0,
+      "convs": 56
+    },
+    {
+      "date": "2026-06-22",
+      "total": 176581666,
+      "input": 403136,
+      "output": 888677,
+      "cacheRead": 172868357,
+      "cacheCreation": 2420054,
+      "reasoning": 1589,
+      "convs": 224
+    },
+    {
+      "date": "2026-06-23",
+      "total": 48527334,
+      "input": 337768,
+      "output": 323217,
+      "cacheRead": 46255101,
+      "cacheCreation": 1611248,
+      "reasoning": 5607,
+      "convs": 145
+    },
+    {
+      "date": "2026-06-24",
+      "total": 35783513,
+      "input": 85126,
+      "output": 169089,
+      "cacheRead": 34498687,
+      "cacheCreation": 1030611,
+      "reasoning": 0,
+      "convs": 39
+    },
+    {
+      "date": "2026-06-25",
+      "total": 35424880,
+      "input": 681605,
+      "output": 373870,
+      "cacheRead": 31744374,
+      "cacheCreation": 2621054,
+      "reasoning": 4246,
+      "convs": 94
+    },
+    {
+      "date": "2026-06-26",
+      "total": 163858091,
+      "input": 559775,
+      "output": 993678,
+      "cacheRead": 157835708,
+      "cacheCreation": 4468930,
+      "reasoning": 0,
+      "convs": 198
+    },
+    {
+      "date": "2026-06-27",
+      "total": 6643858,
+      "input": 75205,
+      "output": 73971,
+      "cacheRead": 6149668,
+      "cacheCreation": 345014,
+      "reasoning": 0,
+      "convs": 41
+    },
+    {
+      "date": "2026-06-28",
+      "total": 76812173,
+      "input": 175245,
+      "output": 638905,
+      "cacheRead": 74027224,
+      "cacheCreation": 1970799,
+      "reasoning": 0,
+      "convs": 136
+    },
+    {
+      "date": "2026-06-29",
+      "total": 160831321,
+      "input": 2685430,
+      "output": 697023,
+      "cacheRead": 155723542,
+      "cacheCreation": 1715170,
+      "reasoning": 67746,
+      "convs": 659
+    },
+    {
+      "date": "2026-06-30",
+      "total": 97889040,
+      "input": 2628642,
+      "output": 676592,
+      "cacheRead": 69642978,
+      "cacheCreation": 24940828,
+      "reasoning": 34464,
+      "convs": 294
+    },
+    {
+      "date": "2026-07-01",
+      "total": 319232062,
+      "input": 7708658,
+      "output": 1238849,
+      "cacheRead": 229284369,
+      "cacheCreation": 81299001,
+      "reasoning": 99015,
+      "convs": 741
+    },
+    {
+      "date": "2026-07-02",
+      "total": 256220429,
+      "input": 2956904,
+      "output": 1067603,
+      "cacheRead": 242125017,
+      "cacheCreation": 10070905,
+      "reasoning": 49044,
+      "convs": 539
+    },
+    {
+      "date": "2026-07-03",
+      "total": 142010206,
+      "input": 432494,
+      "output": 444524,
+      "cacheRead": 136238587,
+      "cacheCreation": 4894601,
+      "reasoning": 10797,
+      "convs": 143
+    },
+    {
+      "date": "2026-07-04",
+      "total": 77588021,
+      "input": 1825165,
+      "output": 477590,
+      "cacheRead": 73888785,
+      "cacheCreation": 1396481,
+      "reasoning": 80401,
+      "convs": 447
+    },
+    {
+      "date": "2026-07-05",
+      "total": 64695004,
+      "input": 1795453,
+      "output": 552833,
+      "cacheRead": 54971476,
+      "cacheCreation": 7375242,
+      "reasoning": 17142,
+      "convs": 186
+    },
+    {
+      "date": "2026-07-06",
+      "total": 171980715,
+      "input": 1406701,
+      "output": 782895,
+      "cacheRead": 166107442,
+      "cacheCreation": 3683677,
+      "reasoning": 29496,
+      "convs": 282
+    },
+    {
+      "date": "2026-07-07",
+      "total": 105161973,
+      "input": 1056419,
+      "output": 647012,
+      "cacheRead": 90674133,
+      "cacheCreation": 12784409,
+      "reasoning": 42852,
+      "convs": 254
+    }
+  ]
+}
