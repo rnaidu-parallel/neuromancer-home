@@ -134,10 +134,11 @@ if (raw) {
     const byDate = new Map(daily.map((d) => [d.date, d.total]));
     const actives = daily.map((d) => d.total).filter((v) => v > 0).sort((a, b) => a - b);
     const q = (p: number) => actives[Math.floor(p * (actives.length - 1))] || 0;
-    // Low breakpoints so only genuinely trivial days read as "Less" — usage is
-    // heavily right-skewed, so percentiles at 40/70/90 buried most days in L1.
-    const thr = [q(0.15), q(0.4), q(0.7)];
-    const level = (v: number) => (v <= 0 ? 0 : v <= thr[0] ? 1 : v <= thr[1] ? 2 : v <= thr[2] ? 3 : 4);
+    // 5 green shades (L0..L4) = 4 dividing thresholds at the quintiles, so each shade
+    // holds ~20% of ACTIVE days (shade centers land near the 10/30/50/70/90th pct).
+    // Zero-activity days keep the neutral backing and get no data-l.
+    const thr = [q(0.2), q(0.4), q(0.6), q(0.8)];
+    const level = (v: number) => (v <= thr[0] ? 0 : v <= thr[1] ? 1 : v <= thr[2] ? 2 : v <= thr[3] ? 3 : 4);
 
     const first = dUTC(daily[0].date);
     const start = new Date(first);
@@ -161,7 +162,7 @@ if (raw) {
         c.dataset.empty = 'true';
       } else {
         const v = byDate.get(iso) || 0;
-        c.dataset.l = String(level(v));
+        if (v > 0) c.dataset.l = String(level(v)); // zero days keep the neutral backing
         const dl = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
         c.title = v > 0 ? `${dl} · ${compact(v)} tokens` : `${dl} · no activity`;
       }

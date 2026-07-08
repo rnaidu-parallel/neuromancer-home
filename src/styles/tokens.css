@@ -21,12 +21,13 @@
   --green:     #3fb950;  /* value, positive */
   --green-2:   #2ea043;
 
-  /* GitHub-style heatmap greens (dark) */
-  --h0: #161b22;
-  --h1: #0e4429;
-  --h2: #006d32;
-  --h3: #26a641;
-  --h4: #39d353;
+  /* heatmap: one backing color for no-activity days, then 5 green shades (L0..L4) */
+  --h-none: #161b22;   /* zero-activity day (in range) */
+  --h0: #0e4429;       /* faintest active — "Less" */
+  --h1: #00682e;
+  --h2: #1a8f3c;
+  --h3: #2ea043;
+  --h4: #3ad557;       /* busiest — "More" */
 
   /* tool brand colors */
   --t-claude:   #d97757;
