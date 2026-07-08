@@ -44,9 +44,19 @@ if (SRC_FILES.length === 0) {
 }
 
 const n = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
-const rows = SRC_FILES.flatMap((fp) =>
-  readFileSync(fp, 'utf8').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l)),
-);
+// Dedupe by exact line content: TokenTracker can sync a shared history across machines,
+// so peer rollups repeat byte-identical rows. Identical (hour, model, source, exact token
+// counts) => the same synced record, kept once; machine-unique rows are all preserved.
+const seen = new Set();
+const rows = [];
+for (const fp of SRC_FILES) {
+  for (const line of readFileSync(fp, 'utf8').split('\n')) {
+    const key = line.trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    rows.push(JSON.parse(key));
+  }
+}
 
 // hour_start may be epoch-ms or an ISO string; we only ever keep the DATE.
 const dayOf = (hs) => {
