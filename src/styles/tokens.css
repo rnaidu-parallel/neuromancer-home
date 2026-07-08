@@ -21,13 +21,14 @@
   --green:     #3fb950;  /* value, positive */
   --green-2:   #2ea043;
 
-  /* heatmap: one backing color for no-activity days, then 5 green shades (L0..L4) */
+  /* heatmap: one backing color for no-activity days, then 5 green shades (L0..L4).
+     Floor kept clearly above the backing so low-activity days still read as green. */
   --h-none: #161b22;   /* zero-activity day (in range) */
-  --h0: #0e4429;       /* faintest active — "Less" */
-  --h1: #00682e;
-  --h2: #1a8f3c;
-  --h3: #2ea043;
-  --h4: #3ad557;       /* busiest — "More" */
+  --h0: #17683a;       /* faintest active — "Less" (still visibly green) */
+  --h1: #22894a;
+  --h2: #2ba851;
+  --h3: #37c95d;
+  --h4: #48e56c;       /* busiest — "More" */
 
   /* tool brand colors */
   --t-claude:   #d97757;
