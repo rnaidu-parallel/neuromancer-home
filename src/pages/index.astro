@@ -95,10 +95,11 @@ const description =
           </div>
         </div>
         <div class="heat__legend label">
-          <span>Less</span>
-          <i class="heat__k" data-l="0"></i><i class="heat__k" data-l="1"></i>
-          <i class="heat__k" data-l="2"></i><i class="heat__k" data-l="3"></i><i class="heat__k" data-l="4"></i>
-          <span>More</span>
+          <span class="heat__legkey"><i class="heat__k heat__k--none"></i>No activity</span>
+          <span class="heat__legkey">Less
+            <i class="heat__k" data-l="0"></i><i class="heat__k" data-l="1"></i>
+            <i class="heat__k" data-l="2"></i><i class="heat__k" data-l="3"></i><i class="heat__k" data-l="4"></i>
+            More</span>
         </div>
       </div>
     </section>
@@ -248,8 +249,10 @@ const description =
     .heat__cell[data-l='3'] { background: var(--h3); }
     .heat__cell[data-l='4'] { background: var(--h4); }
     .heat__cell[data-empty='true'] { background: transparent; }
-    .heat__legend { display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 1rem; }
+    .heat__legend { display: flex; align-items: center; gap: 6px 1.5rem; justify-content: flex-end; flex-wrap: wrap; margin-top: 1rem; }
+    .heat__legkey { display: inline-flex; align-items: center; gap: 5px; }
     .heat__k { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+    .heat__k--none { background: var(--h-none); }
     .heat__k[data-l='0'] { background: var(--h0); } .heat__k[data-l='1'] { background: var(--h1); }
     .heat__k[data-l='2'] { background: var(--h2); } .heat__k[data-l='3'] { background: var(--h3); }
     .heat__k[data-l='4'] { background: var(--h4); }
