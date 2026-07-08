@@ -34,6 +34,7 @@
   --t-cursor:   #e4e6eb;
   --t-opencode: #a855f7;
   --t-gemini:   #4989f5;
+  --t-hermes:   #2dd4bf;
 
   /* ---- type ---- */
   --sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

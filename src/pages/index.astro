@@ -38,6 +38,7 @@ const icons: Record<string, string> = {
   cursor: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14.5 7.2-6.1 1.7-1.7 6.1z"/></svg>',
   opencode: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 8 5 12l4.5 4M14.5 8l4.5 4-4.5 4"/></svg>',
   gemini: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.45 5.4 4.6 9.55 10 10-5.4.45-9.55 4.6-10 10-.45-5.4-4.6-9.55-10-10 5.4-.45 9.55-4.6 10-10z"/></svg>',
+  hermes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v6c0 4-3 6-7 8-4-2-7-4-7-8V7z"/><path d="M9 11l2 2 4-4"/></svg>',
 };
 const toolMeta: Record<string, { name: string; c: string }> = {
   claude: { name: 'Claude', c: 'var(--t-claude)' },
@@ -45,6 +46,7 @@ const toolMeta: Record<string, { name: string; c: string }> = {
   cursor: { name: 'Cursor', c: 'var(--t-cursor)' },
   opencode: { name: 'opencode', c: 'var(--t-opencode)' },
   gemini: { name: 'Gemini', c: 'var(--t-gemini)' },
+  hermes: { name: 'Hermes', c: 'var(--t-hermes)' },
 };
 
 const title = `AI coding-agent usage — ${compact(t.total)} tokens · Rahul Naidu`;
@@ -252,15 +254,14 @@ const description =
     /* ---- tools ---- */
     .toolbar { display: flex; height: 8px; border-radius: 5px; overflow: hidden; gap: 2px; margin-bottom: 1.25rem; }
     .toolbar__seg { width: var(--w); min-width: 3px; }
-    .toolcards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; }
+    .toolcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; }
     .toolcard { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: clamp(0.8rem, 2vw, 1.15rem); display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'ico name' 'ico pct' 'meta meta'; column-gap: 0.6rem; row-gap: 0.15rem; align-items: center; }
     .toolcard__ico { grid-area: ico; width: 26px; height: 26px; align-self: start; }
     .toolcard__ico svg { width: 100%; height: 100%; }
     .toolcard__name { grid-area: name; font-size: var(--fs-sm); font-weight: 600; color: var(--bright); }
     .toolcard__pct { grid-area: pct; font-size: 1.35rem; font-weight: 700; color: var(--bright); line-height: 1; }
     .toolcard__meta { grid-area: meta; font-size: var(--fs-micro); color: var(--muted); margin-top: 0.4rem; }
-    @media (max-width: 820px) { .toolcards { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 480px) { .toolcards { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 400px) { .toolcards { grid-template-columns: repeat(2, 1fr); } }
 
     /* ---- models ---- */
     .models { list-style: none; padding: 0; }

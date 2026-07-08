@@ -16,26 +16,37 @@
 //   - Output granularity is DAILY, never hourly (hourly leaks working-hours patterns).
 //   - The output is a field whitelist, not a redacted dump.
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HOME = homedir();
-const SRC = join(HOME, '.tokentracker/tracker/queue.jsonl'); // safe, project-free rollup
+const DIR = join(HOME, '.tokentracker/tracker');
 const PRICING = join(HOME, '.tokentracker/cache/pricing.json');
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../src/data/stats.json');
 
-if (!existsSync(SRC)) {
-  console.error(`[export-stats] source not found: ${SRC}\nIs TokenTracker installed and has it synced at least once?`);
+// Merge this machine's rollup (queue.jsonl) with any peer machines' rollups pulled
+// alongside it as queue.<machine>.jsonl (e.g. queue.helios.jsonl). ONLY these safe,
+// project-free hourly rollups — NEVER project.queue.jsonl (the `!project` guard is the
+// tripwire). Rows across machines are simply concatenated; the aggregation below sums
+// by day/model/tool, which is correct across machines.
+const SRC_FILES = existsSync(DIR)
+  ? readdirSync(DIR)
+      .filter((f) => /^queue(\.[^/]+)?\.jsonl$/.test(f) && !f.includes('project'))
+      .sort()
+      .map((f) => join(DIR, f))
+  : [];
+
+if (SRC_FILES.length === 0) {
+  console.error(`[export-stats] no queue*.jsonl rollups found in ${DIR}\nIs TokenTracker installed and has it synced at least once?`);
   process.exit(1);
 }
 
 const n = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
-const rows = readFileSync(SRC, 'utf8')
-  .split('\n')
-  .filter((l) => l.trim())
-  .map((l) => JSON.parse(l));
+const rows = SRC_FILES.flatMap((fp) =>
+  readFileSync(fp, 'utf8').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l)),
+);
 
 // hour_start may be epoch-ms or an ISO string; we only ever keep the DATE.
 const dayOf = (hs) => {
@@ -183,5 +194,6 @@ const out = {
 
 writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 console.log(`[export-stats] wrote ${OUT}`);
+console.log(`  merged ${SRC_FILES.length} rollup(s): ${SRC_FILES.map((f) => f.split('/').pop()).join(', ')}`);
 console.log(`  ${out.totals.total.toLocaleString()} tokens · ${out.range.activeDays} active days · ${out.totals.cachePct}% cache`);
 console.log(`  est value $${out.totals.estValueUsd.toLocaleString()} (pricing coverage ${out.totals.valueCoveragePct}%) · ${models.length} models · ${tools.length} tools`);
