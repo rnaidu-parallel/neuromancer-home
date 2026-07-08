@@ -132,11 +132,12 @@ if (raw) {
   const monthsEl = document.getElementById('heat-months');
   if (grid && daily.length) {
     const byDate = new Map(daily.map((d) => [d.date, d.total]));
-    // ABSOLUTE daily-token thresholds (fixed, not percentile) so a cell's color reflects
-    // the real volume that day and reads consistently across the whole timeline — a quiet
-    // month still shows real green instead of being ranked down against the busy months.
-    // Tune these round numbers if usage scale shifts. Zero-activity days keep the backing.
-    const thr = [200_000, 1_500_000, 10_000_000, 50_000_000];
+    const actives = daily.map((d) => d.total).filter((v) => v > 0).sort((a, b) => a - b);
+    const q = (p: number) => actives[Math.floor(p * (actives.length - 1))] || 0;
+    // 5 green shades (L0..L4) = 4 dividing thresholds at the quintiles, so each shade
+    // holds ~20% of ACTIVE days (shade centers land near the 10/30/50/70/90th pct).
+    // Zero-activity days keep the neutral backing and get no data-l.
+    const thr = [q(0.2), q(0.4), q(0.6), q(0.8)];
     const level = (v: number) => (v <= thr[0] ? 0 : v <= thr[1] ? 1 : v <= thr[2] ? 2 : v <= thr[3] ? 3 : 4);
 
     const first = dUTC(daily[0].date);
