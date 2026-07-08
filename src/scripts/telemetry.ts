@@ -134,7 +134,9 @@ if (raw) {
     const byDate = new Map(daily.map((d) => [d.date, d.total]));
     const actives = daily.map((d) => d.total).filter((v) => v > 0).sort((a, b) => a - b);
     const q = (p: number) => actives[Math.floor(p * (actives.length - 1))] || 0;
-    const thr = [q(0.4), q(0.7), q(0.9)];
+    // Low breakpoints so only genuinely trivial days read as "Less" — usage is
+    // heavily right-skewed, so percentiles at 40/70/90 buried most days in L1.
+    const thr = [q(0.15), q(0.4), q(0.7)];
     const level = (v: number) => (v <= 0 ? 0 : v <= thr[0] ? 1 : v <= thr[1] ? 2 : v <= thr[2] ? 3 : 4);
 
     const first = dUTC(daily[0].date);
