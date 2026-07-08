@@ -1,7 +1,5 @@
 ---
-import '@fontsource-variable/space-grotesk';
-import '@fontsource/commit-mono/400.css';
-import '@fontsource/commit-mono/700.css';
+import '@fontsource-variable/inter';
 import '../styles/tokens.css';
 
 interface Props {
@@ -12,10 +10,8 @@ interface Props {
 const { title, description } = Astro.props;
 const canonical = 'https://neuromancer.in';
 const ogImage = 'https://neuromancer.in/og.png';
-const ogImageAlt =
-  "Black-box telemetry readout of Rahul Naidu's AI coding-agent token usage";
+const ogImageAlt = "Rahul Naidu's AI coding-agent token usage dashboard";
 
-// JSON-LD Person — front door for recruiters / search.
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -29,14 +25,7 @@ const personLd = {
     'https://x.com/rahulwlw',
   ],
   worksFor: { '@type': 'Organization', name: 'Canvas AI' },
-  knowsAbout: [
-    'agentic AI systems',
-    'LLM systems',
-    'AI coding agents',
-    'prompt caching',
-    'multi-agent systems',
-    'AI evals',
-  ],
+  knowsAbout: ['AI coding agents', 'agentic AI systems', 'LLM systems', 'prompt caching'],
 };
 ---
 
@@ -48,9 +37,8 @@ const personLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#0a0b0d" />
+    <meta name="theme-color" content="#0a0c0f" />
 
-    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -60,7 +48,6 @@ const personLd = {
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={ogImageAlt} />
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -73,27 +60,7 @@ const personLd = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd)} />
   </head>
   <body>
-    <div class="bb-field" aria-hidden="true"></div>
     <a class="skip-link" href="#main">skip to content</a>
     <slot />
-
-    <style>
-      /* quiet instrument background — faint grid + vignette, pure CSS */
-      .bb-field {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        background:
-          radial-gradient(120% 90% at 50% -10%, rgba(92, 208, 230, 0.05), transparent 55%),
-          radial-gradient(90% 80% at 92% 8%, rgba(255, 180, 46, 0.045), transparent 50%),
-          linear-gradient(rgba(255, 255, 255, 0.021) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.021) 1px, transparent 1px);
-        background-size: 100% 100%, 100% 100%, 64px 64px, 64px 64px;
-        -webkit-mask-image: radial-gradient(130% 110% at 50% 0%, #000 45%, transparent 100%);
-        mask-image: radial-gradient(130% 110% at 50% 0%, #000 45%, transparent 100%);
-      }
-      body > *:not(.bb-field) { position: relative; z-index: 1; }
-    </style>
   </body>
 </html>

@@ -56,7 +56,7 @@ const priceFor = (model) => {
 
 const totals = { total: 0, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, reasoning: 0, conversations: 0 };
 const byModel = new Map(); // model -> {total, valueUsd, covered}
-const byTool = new Map();  // source -> total
+const byTool = new Map();  // source -> {total, models:Set}
 const daily = new Map();   // date -> {total,input,output,cacheRead,cacheCreation,reasoning,convs}
 let value = 0;
 let uncoveredValueTokens = 0;
@@ -93,7 +93,10 @@ for (const r of rows) {
   byModel.set(model, m);
 
   const src = r.source || 'unknown';
-  byTool.set(src, (byTool.get(src) || 0) + t);
+  const tl = byTool.get(src) || { total: 0, models: new Set() };
+  tl.total += t;
+  if (r.model && r.model !== 'unknown') tl.models.add(r.model);
+  byTool.set(src, tl);
 
   const d = dayOf(r.hour_start);
   if (d) {
@@ -134,8 +137,13 @@ const models = [...byModel.values()]
   }));
 
 const tools = [...byTool.entries()]
-  .sort((a, b) => b[1] - a[1])
-  .map(([source, total]) => ({ source, total, share: +((total / totals.total) * 100).toFixed(1) }));
+  .sort((a, b) => b[1].total - a[1].total)
+  .map(([source, v]) => ({
+    source,
+    total: v.total,
+    share: +((v.total / totals.total) * 100).toFixed(1),
+    models: v.models.size,
+  }));
 
 const out = {
   // generatedAt is intentionally date-only (no time) to avoid churn/timezone leak.

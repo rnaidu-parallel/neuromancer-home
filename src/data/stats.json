@@ -6,18 +6,18 @@
     "activeDays": 144
   },
   "totals": {
-    "total": 3764561952,
-    "input": 54177179,
-    "output": 20400787,
-    "cacheRead": 3476669236,
-    "cacheCreation": 213594924,
-    "reasoning": 546638,
-    "authored": 74577966,
-    "conversations": 8126,
+    "total": 3804446002,
+    "input": 54280960,
+    "output": 20526387,
+    "cacheRead": 3515944209,
+    "cacheCreation": 213974620,
+    "reasoning": 554350,
+    "authored": 74807347,
+    "conversations": 8145,
     "cachePct": 92.4,
-    "leverage": 50.5,
-    "estValueUsd": 3377,
-    "valueCoveragePct": 94.5
+    "leverage": 50.9,
+    "estValueUsd": 3403,
+    "valueCoveragePct": 94.6
   },
   "peak": {
     "date": "2026-07-01",
@@ -27,27 +27,27 @@
   "byModel": [
     {
       "model": "claude-opus-4-8",
-      "total": 2132553912,
-      "share": 56.6,
-      "valueUsd": 1675.12
+      "total": 2171655408,
+      "share": 57.1,
+      "valueUsd": 1699.6
     },
     {
       "model": "claude-fable-5",
       "total": 697416869,
-      "share": 18.5,
+      "share": 18.3,
       "valueUsd": 999.96
     },
     {
       "model": "claude-sonnet-5",
       "total": 386791343,
-      "share": 10.3,
+      "share": 10.2,
       "valueUsd": 380.14
     },
     {
       "model": "gpt-5.5",
-      "total": 204292279,
+      "total": 205074833,
       "share": 5.4,
-      "valueUsd": 227.1
+      "valueUsd": 228.36
     },
     {
       "model": "claude-sonnet-4-6",
@@ -191,28 +191,33 @@
   "byTool": [
     {
       "source": "claude",
-      "total": 3329620777,
-      "share": 88.4
+      "total": 3368722273,
+      "share": 88.5,
+      "models": 4
     },
     {
       "source": "codex",
-      "total": 227433330,
-      "share": 6
+      "total": 228215884,
+      "share": 6,
+      "models": 4
     },
     {
       "source": "cursor",
       "total": 146921679,
-      "share": 3.9
+      "share": 3.9,
+      "models": 12
     },
     {
       "source": "opencode",
       "total": 59887928,
-      "share": 1.6
+      "share": 1.6,
+      "models": 6
     },
     {
       "source": "gemini",
       "total": 698238,
-      "share": 0
+      "share": 0,
+      "models": 1
     }
   ],
   "daily": [
@@ -1648,13 +1653,13 @@
     },
     {
       "date": "2026-07-07",
-      "total": 105161973,
-      "input": 1056419,
-      "output": 647012,
-      "cacheRead": 90674133,
-      "cacheCreation": 12784409,
-      "reasoning": 42852,
-      "convs": 254
+      "total": 145046023,
+      "input": 1160200,
+      "output": 772612,
+      "cacheRead": 129949106,
+      "cacheCreation": 13164105,
+      "reasoning": 50564,
+      "convs": 273
     }
   ]
 }
