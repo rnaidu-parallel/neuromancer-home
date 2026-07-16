@@ -1,137 +1,143 @@
 {
-  "generatedAt": "2026-07-09",
+  "generatedAt": "2026-07-16",
   "range": {
     "from": "2025-06-18",
-    "to": "2026-07-09",
-    "activeDays": 146
+    "to": "2026-07-16",
+    "activeDays": 153
   },
   "totals": {
-    "total": 4303783113,
-    "input": 61655550,
-    "output": 22792996,
-    "cacheRead": 3993687508,
-    "cacheCreation": 225922180,
-    "reasoning": 768319,
-    "authored": 84448546,
-    "conversations": 9985,
-    "cachePct": 92.8,
-    "leverage": 51,
-    "estValueUsd": 3940,
-    "valueCoveragePct": 95.2
+    "total": 7097070502,
+    "input": 212411767,
+    "output": 30388826,
+    "cacheRead": 6612546905,
+    "cacheCreation": 243867429,
+    "reasoning": 2473777,
+    "authored": 242800593,
+    "conversations": 24021,
+    "cachePct": 93.2,
+    "leverage": 29.2,
+    "estValueUsd": 6639,
+    "valueCoveragePct": 97.1
   },
   "peak": {
-    "date": "2026-07-01",
-    "total": 338741229,
-    "convs": 982
+    "date": "2026-07-14",
+    "total": 950477795,
+    "convs": 4062
   },
   "byModel": [
     {
       "model": "claude-opus-4-8",
-      "total": 2336493010,
-      "share": 54.3,
-      "valueUsd": 1823.34
+      "total": 2351391838,
+      "share": 33.1,
+      "valueUsd": 1839.78
+    },
+    {
+      "model": "gpt-5.6-sol",
+      "total": 1669483041,
+      "share": 23.5,
+      "valueUsd": 1512.48
     },
     {
       "model": "claude-fable-5",
-      "total": 920221733,
-      "share": 21.4,
-      "valueUsd": 1312.26
-    },
-    {
-      "model": "claude-sonnet-5",
-      "total": 415986337,
-      "share": 9.7,
-      "valueUsd": 396.67
+      "total": 1539074945,
+      "share": 21.7,
+      "valueUsd": 2086.37
     },
     {
       "model": "gpt-5.5",
-      "total": 284687016,
-      "share": 6.6,
-      "valueUsd": 311.49
+      "total": 661812556,
+      "share": 9.3,
+      "valueUsd": 652.87
+    },
+    {
+      "model": "claude-sonnet-5",
+      "total": 528529094,
+      "share": 7.4,
+      "valueUsd": 450.35
     },
     {
       "model": "claude-sonnet-4-6",
       "total": 114616441,
-      "share": 2.7,
+      "share": 1.6,
       "valueUsd": 83.89
     },
     {
       "model": "claude-4-sonnet-thinking",
       "total": 53201369,
-      "share": 1.2,
+      "share": 0.7,
       "valueUsd": 0
     },
     {
       "model": "claude-4.5-opus-high-thinking",
       "total": 43222309,
-      "share": 1,
+      "share": 0.6,
       "valueUsd": 0
     },
     {
       "model": "glm-5.1",
       "total": 37847341,
-      "share": 0.9,
+      "share": 0.5,
       "valueUsd": 0
     },
     {
       "model": "gpt-5.4",
       "total": 19788711,
-      "share": 0.5,
+      "share": 0.3,
       "valueUsd": 11.09
     },
     {
       "model": "minimax-m2.7",
       "total": 18065130,
-      "share": 0.4,
+      "share": 0.3,
       "valueUsd": 0
     },
     {
       "model": "claude-4.5-sonnet-thinking",
       "total": 15484452,
-      "share": 0.4,
+      "share": 0.2,
       "valueUsd": 0
     },
     {
       "model": "claude-4-sonnet",
       "total": 13909582,
-      "share": 0.3,
+      "share": 0.2,
       "valueUsd": 0
     },
     {
       "model": "auto",
       "total": 11392064,
-      "share": 0.3,
+      "share": 0.2,
       "valueUsd": 0
     },
     {
       "model": "grok-code-fast-1",
       "total": 7692283,
-      "share": 0.2,
+      "share": 0.1,
       "valueUsd": 0
     },
     {
       "model": "minimax-m2.5-free",
       "total": 2438615,
-      "share": 0.1,
+      "share": 0,
       "valueUsd": 0
     },
     {
       "model": "gpt-5.4-mini",
       "total": 2265396,
-      "share": 0.1,
+      "share": 0,
       "valueUsd": 0.39
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "total": 1696140,
+      "share": 0,
+      "valueUsd": 0
     },
     {
       "model": "gemini-3-flash-preview",
       "total": 1338861,
       "share": 0,
       "valueUsd": 0.35
-    },
-    {
-      "model": "mimo-v2.5-free",
-      "total": 1312129,
-      "share": 0,
-      "valueUsd": 0
     },
     {
       "model": "gpt-5.3-codex",
@@ -203,26 +209,26 @@
   "byTool": [
     {
       "source": "claude",
-      "total": 3787317521,
-      "share": 88,
-      "models": 4
+      "total": 4533816331,
+      "share": 63.9,
+      "models": 5
     },
     {
       "source": "codex",
-      "total": 307828067,
-      "share": 7.2,
-      "models": 4
+      "total": 2354232635,
+      "share": 33.2,
+      "models": 5
     },
     {
       "source": "cursor",
       "total": 146921679,
-      "share": 3.4,
+      "share": 2.1,
       "models": 12
     },
     {
       "source": "opencode",
-      "total": 60117368,
-      "share": 1.4,
+      "total": 60501379,
+      "share": 0.9,
       "models": 6
     },
     {
@@ -1691,13 +1697,83 @@
     },
     {
       "date": "2026-07-09",
-      "total": 163018568,
-      "input": 1353799,
-      "output": 582775,
-      "cacheRead": 156952450,
-      "cacheCreation": 4124491,
+      "total": 163714165,
+      "input": 1355234,
+      "output": 583480,
+      "cacheRead": 157321510,
+      "cacheCreation": 4448888,
       "reasoning": 54368,
       "convs": 372
+    },
+    {
+      "date": "2026-07-10",
+      "total": 207709530,
+      "input": 3863422,
+      "output": 876824,
+      "cacheRead": 199355819,
+      "cacheCreation": 3613465,
+      "reasoning": 114502,
+      "convs": 746
+    },
+    {
+      "date": "2026-07-11",
+      "total": 44574977,
+      "input": 1152638,
+      "output": 480226,
+      "cacheRead": 38105651,
+      "cacheCreation": 4836462,
+      "reasoning": 0,
+      "convs": 56
+    },
+    {
+      "date": "2026-07-12",
+      "total": 93287194,
+      "input": 2068054,
+      "output": 540987,
+      "cacheRead": 88825122,
+      "cacheCreation": 1852712,
+      "reasoning": 69267,
+      "convs": 450
+    },
+    {
+      "date": "2026-07-13",
+      "total": 128404745,
+      "input": 3280385,
+      "output": 521929,
+      "cacheRead": 121743945,
+      "cacheCreation": 2843741,
+      "reasoning": 47327,
+      "convs": 561
+    },
+    {
+      "date": "2026-07-14",
+      "total": 950477795,
+      "input": 20593421,
+      "output": 2168878,
+      "cacheRead": 923291800,
+      "cacheCreation": 4474472,
+      "reasoning": 350967,
+      "convs": 4062
+    },
+    {
+      "date": "2026-07-15",
+      "total": 876412122,
+      "input": 71416687,
+      "output": 1740063,
+      "cacheRead": 805074688,
+      "cacheCreation": 0,
+      "reasoning": 582943,
+      "convs": 4885
+    },
+    {
+      "date": "2026-07-16",
+      "total": 491725429,
+      "input": 48380175,
+      "output": 1266218,
+      "cacheRead": 442093312,
+      "cacheCreation": 0,
+      "reasoning": 540452,
+      "convs": 3276
     }
   ]
 }
