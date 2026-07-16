@@ -6,77 +6,77 @@
     "activeDays": 153
   },
   "totals": {
-    "total": 7097070502,
-    "input": 212411767,
-    "output": 30388826,
-    "cacheRead": 6612546905,
-    "cacheCreation": 243867429,
-    "reasoning": 2473777,
-    "authored": 242800593,
-    "conversations": 24021,
-    "cachePct": 93.2,
-    "leverage": 29.2,
-    "estValueUsd": 6639,
-    "valueCoveragePct": 97.1
+    "total": 5662849866,
+    "input": 122975883,
+    "output": 26841353,
+    "cacheRead": 5280898131,
+    "cacheCreation": 233446130,
+    "reasoning": 1511735,
+    "authored": 149817236,
+    "conversations": 15938,
+    "cachePct": 93.3,
+    "leverage": 37.8,
+    "estValueUsd": 5365,
+    "valueCoveragePct": 96.3
   },
   "peak": {
     "date": "2026-07-14",
-    "total": 950477795,
-    "convs": 4062
+    "total": 617113569,
+    "convs": 1816
   },
   "byModel": [
     {
       "model": "claude-opus-4-8",
-      "total": 2351391838,
-      "share": 33.1,
-      "valueUsd": 1839.78
-    },
-    {
-      "model": "gpt-5.6-sol",
-      "total": 1669483041,
-      "share": 23.5,
-      "valueUsd": 1512.48
+      "total": 2260383430,
+      "share": 39.9,
+      "valueUsd": 1769.38
     },
     {
       "model": "claude-fable-5",
-      "total": 1539074945,
-      "share": 21.7,
-      "valueUsd": 2086.37
+      "total": 1496284000,
+      "share": 26.4,
+      "valueUsd": 2029.95
+    },
+    {
+      "model": "gpt-5.6-sol",
+      "total": 541588122,
+      "share": 9.6,
+      "valueUsd": 507.82
     },
     {
       "model": "gpt-5.5",
-      "total": 661812556,
-      "share": 9.3,
-      "valueUsd": 652.87
+      "total": 515862525,
+      "share": 9.1,
+      "valueUsd": 534.7
     },
     {
       "model": "claude-sonnet-5",
-      "total": 528529094,
-      "share": 7.4,
-      "valueUsd": 450.35
+      "total": 501952761,
+      "share": 8.9,
+      "valueUsd": 426.48
     },
     {
       "model": "claude-sonnet-4-6",
       "total": 114616441,
-      "share": 1.6,
+      "share": 2,
       "valueUsd": 83.89
     },
     {
       "model": "claude-4-sonnet-thinking",
       "total": 53201369,
-      "share": 0.7,
+      "share": 0.9,
       "valueUsd": 0
     },
     {
       "model": "claude-4.5-opus-high-thinking",
       "total": 43222309,
-      "share": 0.6,
+      "share": 0.8,
       "valueUsd": 0
     },
     {
       "model": "glm-5.1",
       "total": 37847341,
-      "share": 0.5,
+      "share": 0.7,
       "valueUsd": 0
     },
     {
@@ -94,7 +94,7 @@
     {
       "model": "claude-4.5-sonnet-thinking",
       "total": 15484452,
-      "share": 0.2,
+      "share": 0.3,
       "valueUsd": 0
     },
     {
@@ -209,26 +209,26 @@
   "byTool": [
     {
       "source": "claude",
-      "total": 4533816331,
-      "share": 63.9,
+      "total": 4373440645,
+      "share": 77.2,
       "models": 5
     },
     {
       "source": "codex",
-      "total": 2354232635,
-      "share": 33.2,
+      "total": 1080387685,
+      "share": 19.1,
       "models": 5
     },
     {
       "source": "cursor",
       "total": 146921679,
-      "share": 2.1,
+      "share": 2.6,
       "models": 12
     },
     {
       "source": "opencode",
       "total": 60501379,
-      "share": 0.9,
+      "share": 1.1,
       "models": 6
     },
     {
@@ -1657,53 +1657,53 @@
     },
     {
       "date": "2026-07-05",
-      "total": 67296902,
-      "input": 1810235,
-      "output": 576350,
-      "cacheRead": 57399367,
-      "cacheCreation": 7510950,
-      "reasoning": 17142,
-      "convs": 200
+      "total": 56346876,
+      "input": 1714950,
+      "output": 461189,
+      "cacheRead": 47133587,
+      "cacheCreation": 7037150,
+      "reasoning": 16046,
+      "convs": 163
     },
     {
       "date": "2026-07-06",
-      "total": 171980715,
-      "input": 1406701,
-      "output": 782895,
-      "cacheRead": 166107442,
-      "cacheCreation": 3683677,
-      "reasoning": 29496,
-      "convs": 282
+      "total": 136979803,
+      "input": 1321370,
+      "output": 642038,
+      "cacheRead": 131881219,
+      "cacheCreation": 3135176,
+      "reasoning": 27992,
+      "convs": 249
     },
     {
       "date": "2026-07-07",
-      "total": 145046023,
-      "input": 1160200,
-      "output": 772612,
-      "cacheRead": 129949106,
-      "cacheCreation": 13164105,
-      "reasoning": 50564,
-      "convs": 273
+      "total": 91877469,
+      "input": 861520,
+      "output": 517879,
+      "cacheRead": 84818007,
+      "cacheCreation": 5680063,
+      "reasoning": 43293,
+      "convs": 191
     },
     {
       "date": "2026-07-08",
-      "total": 228534467,
-      "input": 3143171,
-      "output": 1013764,
-      "cacheRead": 218413020,
-      "cacheCreation": 5964512,
-      "reasoning": 103284,
-      "convs": 641
+      "total": 175647232,
+      "input": 2015787,
+      "output": 802323,
+      "cacheRead": 168473809,
+      "cacheCreation": 4355313,
+      "reasoning": 64092,
+      "convs": 438
     },
     {
       "date": "2026-07-09",
-      "total": 163714165,
-      "input": 1355234,
-      "output": 583480,
-      "cacheRead": 157321510,
-      "cacheCreation": 4448888,
-      "reasoning": 54368,
-      "convs": 372
+      "total": 137431626,
+      "input": 1261663,
+      "output": 498730,
+      "cacheRead": 131523049,
+      "cacheCreation": 4143131,
+      "reasoning": 51228,
+      "convs": 331
     },
     {
       "date": "2026-07-10",
@@ -1747,33 +1747,33 @@
     },
     {
       "date": "2026-07-14",
-      "total": 950477795,
-      "input": 20593421,
-      "output": 2168878,
-      "cacheRead": 923291800,
+      "total": 617113569,
+      "input": 8066829,
+      "output": 1374762,
+      "cacheRead": 603209624,
       "cacheCreation": 4474472,
-      "reasoning": 350967,
-      "convs": 4062
+      "reasoning": 160488,
+      "convs": 1816
     },
     {
       "date": "2026-07-15",
-      "total": 876412122,
-      "input": 71416687,
-      "output": 1740063,
-      "cacheRead": 805074688,
+      "total": 272906992,
+      "input": 23526451,
+      "output": 560704,
+      "cacheRead": 249611776,
       "cacheCreation": 0,
-      "reasoning": 582943,
-      "convs": 4885
+      "reasoning": 196276,
+      "convs": 1558
     },
     {
       "date": "2026-07-16",
-      "total": 491725429,
-      "input": 48380175,
-      "output": 1266218,
-      "cacheRead": 442093312,
+      "total": 172663415,
+      "input": 21061370,
+      "output": 499162,
+      "cacheRead": 151350400,
       "cacheCreation": 0,
-      "reasoning": 540452,
-      "convs": 3276
+      "reasoning": 207759,
+      "convs": 1162
     }
   ]
 }

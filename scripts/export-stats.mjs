@@ -44,17 +44,38 @@ if (SRC_FILES.length === 0) {
 }
 
 const n = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
-// Dedupe by exact line content: TokenTracker can sync a shared history across machines,
-// so peer rollups repeat byte-identical rows. Identical (hour, model, source, exact token
-// counts) => the same synced record, kept once; machine-unique rows are all preserved.
-const seen = new Set();
+// TokenTracker's rollup rows are CUMULATIVE SNAPSHOTS, not additive events: it re-emits
+// the same (hour_start, model, source) bucket repeatedly as that hour fills, each row a
+// running total that grows monotonically (a busy hour can appear up to ~7×). Summing every
+// row therefore multi-counts busy hours (measured ~27% inflation). Collapse each bucket to
+// its FINAL (max) snapshot before aggregating.
+//
+// Collapse PER FILE: within one machine's rollup a repeated bucket key is a re-emit, but the
+// same key in a different machine's rollup (queue.<machine>.jsonl) is genuinely separate
+// usage — collapsing across files would drop it. So collapse each file independently, then
+// concatenate. A final byte-identical guard still drops a peer's synced copy of the very same
+// final bucket (TokenTracker syncs shared history across machines as identical rows); a peer
+// holding a *staler* snapshot of a shared bucket survives as a distinct row (bounded, tiny).
+// JSON-tuple key (not `a|b|c` concat) so a `|` inside a field or a missing field can't alias two
+// distinct buckets into one. null-coalesce so absent fields don't collide with the string "undefined".
+const bucketKey = (r) => JSON.stringify([r.hour_start ?? null, r.model ?? null, r.source ?? null]);
+const seenLine = new Set(); // raw-line set: byte-identical rows repeat across synced peer rollups
 const rows = [];
 for (const fp of SRC_FILES) {
-  for (const line of readFileSync(fp, 'utf8').split('\n')) {
-    const key = line.trim();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    rows.push(JSON.parse(key));
+  // LAST write wins = the final snapshot for the bucket. The file is an append log in emission
+  // order, so the last row for a key is its final cumulative state — robust to ties and to a rare
+  // corrected-lower total (a strict-max compare would wrongly keep an earlier/higher row).
+  const final = new Map(); // bucketKey -> { row, line }
+  for (const raw of readFileSync(fp, 'utf8').split('\n')) {
+    const line = raw.trim();
+    if (!line) continue;
+    const r = JSON.parse(line);
+    final.set(bucketKey(r), { r, line });
+  }
+  for (const { r, line } of final.values()) {
+    if (seenLine.has(line)) continue; // a peer's byte-identical copy of the same final bucket
+    seenLine.add(line);
+    rows.push(r);
   }
 }
 
