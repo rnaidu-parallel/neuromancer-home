@@ -1,180 +1,145 @@
 #!/usr/bin/env node
 // export-stats.mjs — build the public token-stats snapshot for neuromancer.in.
 //
-// Reads the LOCAL TokenTracker hourly rollup and writes an aggregated, whitelisted
-// JSON snapshot to src/data/stats.json. Run manually whenever you want to refresh
-// the site, then commit + push (Vercel redeploys).
+// Reads a LOCAL tokscale graph export and writes an aggregated, whitelisted JSON
+// snapshot to src/data/stats.json. Run manually whenever you want to refresh the
+// site, then commit + push (Vercel redeploys).
 //
-//   node scripts/export-stats.mjs        # or: npm run stats
+//   tokscale graph > /tmp/tokscale-graph.json
+//   node scripts/export-stats.mjs /tmp/tokscale-graph.json     # or: npm run stats
+//
+// Source note: this replaced the TokenTracker `queue.jsonl` rollup on 2026-07-30 when
+// TokenTracker was uninstalled. tokscale re-parses the raw CLI logs itself, so it is an
+// independent counter rather than a derived rollup — no cumulative-snapshot collapse is
+// needed here (tokscale's `contributions[]` are already one entry per day).
+//
+// ccusage is an ALTERNATIVE source, not an additive one: it parses the same Claude logs
+// tokscale does, so summing the two would double-count. Pick one.
 //
 // SECURITY / CLEAN-ROOM RULES (do not relax):
-//   - Source is queue.jsonl ONLY. It is aggregated by (hour, model, tool) with NO
-//     project fields, so nothing per-project can leak.
-//   - We NEVER read project.queue.jsonl (it carries project_key / project_ref).
-//   - We NEVER read or emit credentials/identifiers (relay-cookies.json,
-//     config.json machineId/baseUrl, auth files).
+//   - Read ONLY the tokscale graph export. It carries date/model/client/token/cost fields
+//     and NO project, path, prompt, or file identifiers.
+//   - We NEVER read or emit credentials/identifiers (auth tokens, machine ids, cookies).
 //   - Output granularity is DAILY, never hourly (hourly leaks working-hours patterns).
 //   - The output is a field whitelist, not a redacted dump.
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const HOME = homedir();
-const DIR = join(HOME, '.tokentracker/tracker');
-const PRICING = join(HOME, '.tokentracker/cache/pricing.json');
-const OUT = join(dirname(fileURLToPath(import.meta.url)), '../src/data/stats.json');
+const HERE = dirname(fileURLToPath(import.meta.url));
+const OUT = join(HERE, '../src/data/stats.json');
+const SRC = process.argv[2];
 
-// Merge this machine's rollup (queue.jsonl) with any peer machines' rollups pulled
-// alongside it as queue.<machine>.jsonl (e.g. queue.helios.jsonl). ONLY these safe,
-// project-free hourly rollups — NEVER project.queue.jsonl (the `!project` guard is the
-// tripwire). Rows across machines are simply concatenated; the aggregation below sums
-// by day/model/tool, which is correct across machines.
-const SRC_FILES = existsSync(DIR)
-  ? readdirSync(DIR)
-      .filter((f) => /^queue(\.[^/]+)?\.jsonl$/.test(f) && !f.includes('project'))
-      .sort()
-      .map((f) => join(DIR, f))
-  : [];
+if (!SRC || !existsSync(SRC)) {
+  console.error(
+    `[export-stats] usage: node scripts/export-stats.mjs <tokscale-graph.json>\n` +
+      `Generate one with:  tokscale graph > /tmp/tokscale-graph.json`,
+  );
+  process.exit(1);
+}
 
-if (SRC_FILES.length === 0) {
-  console.error(`[export-stats] no queue*.jsonl rollups found in ${DIR}\nIs TokenTracker installed and has it synced at least once?`);
+const graph = JSON.parse(readFileSync(SRC, 'utf8'));
+const days = Array.isArray(graph?.contributions) ? graph.contributions : [];
+if (days.length === 0) {
+  console.error(`[export-stats] no contributions[] in ${SRC} — aborting without overwriting ${OUT}`);
   process.exit(1);
 }
 
 const n = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
-// TokenTracker's rollup rows are CUMULATIVE SNAPSHOTS, not additive events: it re-emits
-// the same (hour_start, model, source) bucket repeatedly as that hour fills, each row a
-// running total that grows monotonically (a busy hour can appear up to ~7×). Summing every
-// row therefore multi-counts busy hours (measured ~27% inflation). Collapse each bucket to
-// its FINAL (max) snapshot before aggregating.
-//
-// Collapse PER FILE: within one machine's rollup a repeated bucket key is a re-emit, but the
-// same key in a different machine's rollup (queue.<machine>.jsonl) is genuinely separate
-// usage — collapsing across files would drop it. So collapse each file independently, then
-// concatenate. A final byte-identical guard still drops a peer's synced copy of the very same
-// final bucket (TokenTracker syncs shared history across machines as identical rows); a peer
-// holding a *staler* snapshot of a shared bucket survives as a distinct row (bounded, tiny).
-// JSON-tuple key (not `a|b|c` concat) so a `|` inside a field or a missing field can't alias two
-// distinct buckets into one. null-coalesce so absent fields don't collide with the string "undefined".
-const bucketKey = (r) => JSON.stringify([r.hour_start ?? null, r.model ?? null, r.source ?? null]);
-const seenLine = new Set(); // raw-line set: byte-identical rows repeat across synced peer rollups
-const rows = [];
-for (const fp of SRC_FILES) {
-  // LAST write wins = the final snapshot for the bucket. The file is an append log in emission
-  // order, so the last row for a key is its final cumulative state — robust to ties and to a rare
-  // corrected-lower total (a strict-max compare would wrongly keep an earlier/higher row).
-  const final = new Map(); // bucketKey -> { row, line }
-  for (const raw of readFileSync(fp, 'utf8').split('\n')) {
-    const line = raw.trim();
-    if (!line) continue;
-    const r = JSON.parse(line);
-    final.set(bucketKey(r), { r, line });
-  }
-  for (const { r, line } of final.values()) {
-    if (seenLine.has(line)) continue; // a peer's byte-identical copy of the same final bucket
-    seenLine.add(line);
-    rows.push(r);
+
+const totals = { total: 0, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, reasoning: 0, conversations: 0 };
+const byModel = new Map(); // model -> {model,total,valueUsd}
+const byTool = new Map(); // client -> {total, models:Set}
+const daily = new Map(); // date -> {...}
+let value = 0;
+let pricedTokens = 0;
+
+// A (client, model) pair that produces cost anywhere in the dataset counts as "priced".
+// Some clients legitimately report zero cost (subscription seats), so this is measured
+// across the whole set rather than per row.
+const pricedModels = new Set();
+for (const d of days) {
+  for (const c of d?.clients ?? []) {
+    if (n(c.cost) > 0 && c.modelId) pricedModels.add(c.modelId);
   }
 }
 
-// hour_start may be epoch-ms or an ISO string; we only ever keep the DATE.
-const dayOf = (hs) => {
-  if (hs == null) return null;
-  if (typeof hs === 'number') return new Date(hs).toISOString().slice(0, 10);
-  return String(hs).slice(0, 10);
-};
+for (const d of days) {
+  const date = typeof d?.date === 'string' ? d.date.slice(0, 10) : null;
+  if (!date) continue;
 
-// Pricing: exact model id, else common bedrock-style prefixes, else null (uncovered).
-let pricing = {};
-try { pricing = JSON.parse(readFileSync(PRICING, 'utf8')); } catch { /* value stays best-effort */ }
-const priceFor = (model) => {
-  for (const key of [model, `anthropic.${model}`, `us.anthropic.${model}`, `global.anthropic.${model}`]) {
-    if (pricing[key]) return pricing[key];
-  }
-  return null;
-};
+  const tb = d.tokenBreakdown ?? {};
+  const inp = n(tb.input);
+  const out = n(tb.output);
+  const cr = n(tb.cacheRead);
+  const cc = n(tb.cacheWrite); // tokscale calls it cacheWrite; the site's field is cacheCreation
+  const rsn = n(tb.reasoning);
+  const total = n(d.totals?.tokens);
+  const convs = n(d.totals?.messages);
 
-const totals = { total: 0, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, reasoning: 0, conversations: 0 };
-const byModel = new Map(); // model -> {total, valueUsd, covered}
-const byTool = new Map();  // source -> {total, models:Set}
-const daily = new Map();   // date -> {total,input,output,cacheRead,cacheCreation,reasoning,convs}
-let value = 0;
-let uncoveredValueTokens = 0;
-
-const blankDay = () => ({ total: 0, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, reasoning: 0, convs: 0 });
-
-for (const r of rows) {
-  const t = n(r.total_tokens);
-  const inp = n(r.input_tokens), out = n(r.output_tokens);
-  const cr = n(r.cached_input_tokens), cc = n(r.cache_creation_input_tokens);
-  totals.total += t;
+  totals.total += total;
   totals.input += inp;
   totals.output += out;
   totals.cacheRead += cr;
   totals.cacheCreation += cc;
-  totals.reasoning += n(r.reasoning_output_tokens);
-  totals.conversations += n(r.conversation_count);
+  totals.reasoning += rsn;
+  totals.conversations += convs;
+  value += n(d.totals?.cost);
 
-  const model = r.model || 'unknown';
-  const p = priceFor(model);
-  let rowVal = 0;
-  if (p) {
-    rowVal = inp * n(p.input_cost_per_token)
-      + out * n(p.output_cost_per_token)
-      + cr * n(p.cache_read_input_token_cost)
-      + cc * n(p.cache_creation_input_token_cost);
-  } else {
-    uncoveredValueTokens += t;
-  }
-  value += rowVal;
+  daily.set(date, {
+    total,
+    input: inp,
+    output: out,
+    cacheRead: cr,
+    cacheCreation: cc,
+    reasoning: rsn,
+    convs,
+  });
 
-  const m = byModel.get(model) || { model, total: 0, valueUsd: 0, covered: !!p };
-  m.total += t; m.valueUsd += rowVal; m.covered = m.covered || !!p;
-  byModel.set(model, m);
+  for (const c of d.clients ?? []) {
+    const t =
+      n(c.tokens?.input) + n(c.tokens?.output) + n(c.tokens?.cacheRead) + n(c.tokens?.cacheWrite) + n(c.tokens?.reasoning);
 
-  const src = r.source || 'unknown';
-  const tl = byTool.get(src) || { total: 0, models: new Set() };
-  tl.total += t;
-  if (r.model && r.model !== 'unknown') tl.models.add(r.model);
-  byTool.set(src, tl);
+    const model = c.modelId || 'unknown';
+    const m = byModel.get(model) || { model, total: 0, valueUsd: 0 };
+    m.total += t;
+    m.valueUsd += n(c.cost);
+    byModel.set(model, m);
+    if (pricedModels.has(model)) pricedTokens += t;
 
-  const d = dayOf(r.hour_start);
-  if (d) {
-    const day = daily.get(d) || blankDay();
-    day.total += t;
-    day.input += inp;
-    day.output += out;
-    day.cacheRead += cr;
-    day.cacheCreation += cc;
-    day.reasoning += n(r.reasoning_output_tokens);
-    day.convs += n(r.conversation_count);
-    daily.set(d, day);
+    const src = c.client || 'unknown';
+    const tl = byTool.get(src) || { total: 0, models: new Set() };
+    tl.total += t;
+    if (c.modelId && c.modelId !== 'unknown') tl.models.add(c.modelId);
+    byTool.set(src, tl);
   }
 }
 
 const dates = [...daily.keys()].sort();
 if (!totals.total || dates.length === 0) {
-  console.error('[export-stats] no usable rows in queue.jsonl — aborting without overwriting src/data/stats.json');
+  console.error(`[export-stats] no usable days in ${SRC} — aborting without overwriting ${OUT}`);
   process.exit(1);
 }
-const from = dates[0], to = dates[dates.length - 1];
+
+const from = dates[0];
+const to = dates[dates.length - 1];
 const authored = totals.input + totals.output; // fresh, non-cache tokens
 const cachePct = totals.total ? (totals.cacheRead / totals.total) * 100 : 0;
 const leverage = authored ? totals.total / authored : 0;
 
-// peak day
 let peak = { date: null, total: 0, convs: 0 };
 for (const [d, v] of daily) if (v.total > peak.total) peak = { date: d, total: v.total, convs: v.convs };
 
+const clientTokenTotal = [...byTool.values()].reduce((s, v) => s + v.total, 0) || 1;
+
 const models = [...byModel.values()]
-  .filter((m) => m.total > 0 && m.model !== 'unknown') // drop empty/placeholder models from the count
+  .filter((m) => m.total > 0 && m.model !== 'unknown')
   .sort((a, b) => b.total - a.total)
   .map((m) => ({
     model: m.model,
     total: m.total,
-    share: +((m.total / totals.total) * 100).toFixed(1),
+    share: +((m.total / clientTokenTotal) * 100).toFixed(1),
     valueUsd: +m.valueUsd.toFixed(2),
   }));
 
@@ -183,7 +148,7 @@ const tools = [...byTool.entries()]
   .map(([source, v]) => ({
     source,
     total: v.total,
-    share: +((v.total / totals.total) * 100).toFixed(1),
+    share: +((v.total / clientTokenTotal) * 100).toFixed(1),
     models: v.models.size,
   }));
 
@@ -203,28 +168,16 @@ const out = {
     cachePct: +cachePct.toFixed(1),
     leverage: +leverage.toFixed(1),
     estValueUsd: Math.round(value),
-    valueCoveragePct: +(100 - (uncoveredValueTokens / totals.total) * 100).toFixed(1),
+    valueCoveragePct: +((pricedTokens / clientTokenTotal) * 100).toFixed(1),
   },
   peak,
   byModel: models,
   byTool: tools,
-  daily: dates.map((d) => {
-    const v = daily.get(d);
-    return {
-      date: d,
-      total: v.total,
-      input: v.input,
-      output: v.output,
-      cacheRead: v.cacheRead,
-      cacheCreation: v.cacheCreation,
-      reasoning: v.reasoning,
-      convs: v.convs,
-    };
-  }),
+  daily: dates.map((d) => ({ date: d, ...daily.get(d) })),
 };
 
 writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 console.log(`[export-stats] wrote ${OUT}`);
-console.log(`  merged ${SRC_FILES.length} rollup(s): ${SRC_FILES.map((f) => f.split('/').pop()).join(', ')}`);
+console.log(`  source: tokscale graph (${SRC})`);
 console.log(`  ${out.totals.total.toLocaleString()} tokens · ${out.range.activeDays} active days · ${out.totals.cachePct}% cache`);
 console.log(`  est value $${out.totals.estValueUsd.toLocaleString()} (pricing coverage ${out.totals.valueCoveragePct}%) · ${models.length} models · ${tools.length} tools`);

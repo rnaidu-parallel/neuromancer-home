@@ -3,12 +3,17 @@
 #
 #   npm run refresh
 #
-# Does the mechanical, non-destructive refresh end to end: pulls the helios peer
-# rollup, rebuilds src/data/stats.json from local logs, verifies the production
+# Does the mechanical, non-destructive refresh end to end: exports the local
+# tokscale graph, rebuilds src/data/stats.json from it, verifies the production
 # build, then (only if the numbers changed) commits + pushes so Vercel redeploys.
 #
-# CLEAN-ROOM: only ever pulls queue.jsonl (aggregate, project-free). NEVER
-#   project.queue.jsonl (that carries project_key/project_ref = employer names).
+# CLEAN-ROOM: the tokscale graph export carries date/model/client/token/cost only —
+#   no project, path, or prompt fields. Nothing per-project can leak.
+#
+# PEER DATA: this is a LOCAL export. The old TokenTracker path scp'd helios's rollup
+#   and merged it; tokscale has no equivalent offline peer merge, so helios-only usage
+#   is no longer counted. (Local tokscale already exceeds the old merged figure — it
+#   reaches further back and covers more clients — but the peer gap is real.)
 #
 # MANUAL STEP LEFT OUT: public/og.png is a static browser capture of the hero, so
 #   it is NOT regenerated here — if the headline total changed, recapture the OG
@@ -16,16 +21,18 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "▸ [0/3] pulling helios rollup (queue.jsonl only)…"
-if scp -o ConnectTimeout=8 rahul@helios.local:'~/.tokentracker/tracker/queue.jsonl' \
-       ~/.tokentracker/tracker/queue.helios.jsonl 2>/dev/null; then
-  echo "  ✓ queue.helios.jsonl updated"
+GRAPH="${TOKSCALE_GRAPH:-/tmp/tokscale-graph.json}"
+
+echo "▸ [0/3] exporting tokscale graph…"
+if command -v tokscale >/dev/null 2>&1; then
+  tokscale graph > "$GRAPH"
 else
-  echo "  ⚠ helios unreachable — refreshing with local + last-synced peer data only"
+  npx --yes tokscale graph > "$GRAPH"
 fi
+echo "  ✓ $GRAPH"
 
 echo "▸ [1/3] regenerating stats.json…"
-npm run stats
+TOKSCALE_GRAPH="$GRAPH" npm run stats
 
 echo "▸ [2/3] verifying build…"
 npm run build >/dev/null && echo "  ✓ build passes"
