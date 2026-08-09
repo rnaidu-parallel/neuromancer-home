@@ -1,23 +1,23 @@
 {
-  "generatedAt": "2026-08-06",
+  "generatedAt": "2026-08-09",
   "range": {
     "from": "2025-03-25",
-    "to": "2026-08-06",
-    "activeDays": 201
+    "to": "2026-08-09",
+    "activeDays": 204
   },
   "totals": {
-    "total": 10206639488,
-    "input": 226723383,
-    "output": 43264705,
-    "cacheRead": 9657492979,
-    "cacheCreation": 274380492,
-    "reasoning": 4777929,
-    "authored": 269988088,
-    "conversations": 67621,
-    "cachePct": 94.6,
-    "leverage": 37.8,
-    "estValueUsd": 8973,
-    "valueCoveragePct": 99.8
+    "total": 10500120127,
+    "input": 231003681,
+    "output": 44362775,
+    "cacheRead": 9942210095,
+    "cacheCreation": 277671113,
+    "reasoning": 4872463,
+    "authored": 275366456,
+    "conversations": 69508,
+    "cachePct": 94.7,
+    "leverage": 38.1,
+    "estValueUsd": 9077,
+    "valueCoveragePct": 99.5
   },
   "peak": {
     "date": "2026-07-28",
@@ -28,49 +28,49 @@
     {
       "model": "gpt-5.6-sol",
       "total": 2616738235,
-      "share": 25.6,
+      "share": 24.9,
       "valueUsd": 2097.81
     },
     {
       "model": "claude-opus-4-8",
       "total": 2099655683,
-      "share": 20.6,
+      "share": 20,
       "valueUsd": 1695.13
     },
     {
       "model": "claude-fable-5",
       "total": 1954976587,
-      "share": 19.2,
+      "share": 18.6,
       "valueUsd": 2711.55
     },
     {
       "model": "claude-opus-5",
-      "total": 976895009,
-      "share": 9.6,
-      "valueUsd": 703.03
+      "total": 1221386029,
+      "share": 11.6,
+      "valueUsd": 859.13
     },
     {
       "model": "gpt-5.5",
       "total": 820568186,
-      "share": 8,
-      "valueUsd": 807.74
+      "share": 7.8,
+      "valueUsd": 750.12
     },
     {
       "model": "claude-sonnet-5",
-      "total": 798964981,
-      "share": 7.8,
-      "valueUsd": 564.07
+      "total": 807920988,
+      "share": 7.7,
+      "valueUsd": 567.72
     },
     {
       "model": "gpt-5.6-luna",
-      "total": 324735939,
+      "total": 331342342,
       "share": 3.2,
-      "valueUsd": 9.82
+      "valueUsd": 9.9
     },
     {
       "model": "gpt-5.6-terra",
       "total": 179941823,
-      "share": 1.8,
+      "share": 1.7,
       "valueUsd": 67.18
     },
     {
@@ -84,6 +84,12 @@
       "total": 53201369,
       "share": 0.5,
       "valueUsd": 49.97
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "total": 49082821,
+      "share": 0.5,
+      "valueUsd": 0
     },
     {
       "model": "cursor-grok-4.5-medium",
@@ -116,12 +122,6 @@
       "valueUsd": 11.73
     },
     {
-      "model": "deepseek-v4-flash-free",
-      "total": 18804477,
-      "share": 0.2,
-      "valueUsd": 0
-    },
-    {
       "model": "minimax-m2.7",
       "total": 18065130,
       "share": 0.2,
@@ -130,7 +130,7 @@
     {
       "model": "claude-4-5-sonnet-thinking",
       "total": 15484452,
-      "share": 0.2,
+      "share": 0.1,
       "valueUsd": 15.37
     },
     {
@@ -143,7 +143,7 @@
       "model": "auto",
       "total": 11392064,
       "share": 0.1,
-      "valueUsd": 0.31
+      "valueUsd": 0.03
     },
     {
       "model": "grok-code-fast-1",
@@ -153,9 +153,9 @@
     },
     {
       "model": "kimi-k3",
-      "total": 4504945,
-      "share": 0,
-      "valueUsd": 3.86
+      "total": 7653810,
+      "share": 0.1,
+      "valueUsd": 5.72
     },
     {
       "model": "gemini-3.1-flash-lite-preview",
@@ -251,27 +251,27 @@
   "byTool": [
     {
       "source": "claude",
-      "total": 5936839341,
-      "share": 58.2,
+      "total": 6190286368,
+      "share": 59,
       "models": 6
     },
     {
       "source": "codex",
       "total": 3931100609,
-      "share": 38.5,
+      "share": 37.4,
       "models": 8
     },
     {
       "source": "cursor",
       "total": 190242762,
-      "share": 1.9,
+      "share": 1.8,
       "models": 15
     },
     {
       "source": "opencode",
-      "total": 144667571,
-      "share": 1.4,
-      "models": 9
+      "total": 184701183,
+      "share": 1.8,
+      "models": 10
     },
     {
       "source": "openclaw",
@@ -2307,13 +2307,43 @@
     },
     {
       "date": "2026-08-06",
-      "total": 125788481,
-      "input": 741989,
-      "output": 464207,
-      "cacheRead": 121712664,
-      "cacheCreation": 2836466,
-      "reasoning": 33155,
-      "convs": 627
+      "total": 143768946,
+      "input": 850833,
+      "output": 539489,
+      "cacheRead": 139214119,
+      "cacheCreation": 3121789,
+      "reasoning": 42716,
+      "convs": 791
+    },
+    {
+      "date": "2026-08-07",
+      "total": 266443664,
+      "input": 3081376,
+      "output": 936398,
+      "cacheRead": 259415801,
+      "cacheCreation": 2927719,
+      "reasoning": 82370,
+      "convs": 1568
+    },
+    {
+      "date": "2026-08-08",
+      "total": 5326216,
+      "input": 945565,
+      "output": 65121,
+      "cacheRead": 4312960,
+      "cacheCreation": 0,
+      "reasoning": 2570,
+      "convs": 98
+    },
+    {
+      "date": "2026-08-09",
+      "total": 3730294,
+      "input": 144513,
+      "output": 21269,
+      "cacheRead": 3486900,
+      "cacheCreation": 77579,
+      "reasoning": 33,
+      "convs": 57
     }
   ]
 }
