@@ -143,7 +143,11 @@ if (raw) {
     const first = dUTC(daily[0].date);
     const start = new Date(first);
     start.setUTCDate(start.getUTCDate() - start.getUTCDay());
-    const end = dUTC(daily[daily.length - 1].date);
+    // Run the grid to today, not to the last *active* day, so the most recent
+    // dates always have cells (idle ones read as "no activity").
+    const last = dUTC(daily[daily.length - 1].date);
+    const today = dUTC(new Date().toISOString().slice(0, 10));
+    const end = today.getTime() > last.getTime() ? today : last;
     const COL = 19; // 15px cell + 4px gap
     const frag = document.createDocumentFragment();
     const months: { col: number; label: string }[] = [];
@@ -178,5 +182,8 @@ if (raw) {
         monthsEl.appendChild(s);
       }
     }
+    // Open on the most recent weeks; the grid is wider than the panel.
+    const scroller = grid.closest<HTMLElement>('.heat__scroll');
+    if (scroller) scroller.scrollLeft = scroller.scrollWidth;
   }
 }
