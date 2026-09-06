@@ -1,12 +1,17 @@
 #!/usr/bin/env node
 // export-stats.mjs — build the public token-stats snapshot for neuromancer.in.
 //
-// Reads a LOCAL tokscale graph export and writes an aggregated, whitelisted JSON
-// snapshot to src/data/stats.json. Run manually whenever you want to refresh the
-// site, then commit + push (Vercel redeploys).
+// Reads one or more tokscale graph exports (one per machine, from the private
+// usage-telemetry repo) and writes an aggregated, whitelisted JSON snapshot to
+// src/data/stats.json. Run manually whenever you want to refresh the site, then
+// commit + push (Vercel redeploys).
 //
-//   tokscale graph > /tmp/tokscale-graph.json
-//   node scripts/export-stats.mjs /tmp/tokscale-graph.json     # or: npm run stats
+//   node scripts/export-stats.mjs ~/usage-telemetry          # every *.json in the dir
+//   node scripts/export-stats.mjs a.json b.json              # or explicit files
+//   npm run stats                                            # = the dir form
+//
+// Each machine's graph counts only that machine's local logs, so summing them is
+// safe as long as no log directory is synced between machines.
 //
 // Source note: this replaced the TokenTracker `queue.jsonl` rollup on 2026-07-30 when
 // TokenTracker was uninstalled. tokscale re-parses the raw CLI logs itself, so it is an
@@ -23,27 +28,38 @@
 //   - Output granularity is DAILY, never hourly (hourly leaks working-hours patterns).
 //   - The output is a field whitelist, not a redacted dump.
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, statSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = join(HERE, '../src/data/stats.json');
-const SRC = process.argv[2];
+const SRCS = process.argv
+  .slice(2)
+  .filter((p) => existsSync(p))
+  .flatMap((p) =>
+    statSync(p).isDirectory()
+      ? readdirSync(p).filter((f) => f.endsWith('.json')).sort().map((f) => join(p, f))
+      : [p],
+  );
 
-if (!SRC || !existsSync(SRC)) {
+if (SRCS.length === 0) {
   console.error(
-    `[export-stats] usage: node scripts/export-stats.mjs <tokscale-graph.json>\n` +
-      `Generate one with:  tokscale graph > /tmp/tokscale-graph.json`,
+    `[export-stats] usage: node scripts/export-stats.mjs <dir-or-graph.json...>\n` +
+      `Snapshots come from the private usage-telemetry repo (~/usage-telemetry/push.sh).`,
   );
   process.exit(1);
 }
 
-const graph = JSON.parse(readFileSync(SRC, 'utf8'));
-const days = Array.isArray(graph?.contributions) ? graph.contributions : [];
-if (days.length === 0) {
-  console.error(`[export-stats] no contributions[] in ${SRC} — aborting without overwriting ${OUT}`);
-  process.exit(1);
+const days = [];
+for (const src of SRCS) {
+  const graph = JSON.parse(readFileSync(src, 'utf8'));
+  const c = Array.isArray(graph?.contributions) ? graph.contributions : [];
+  if (c.length === 0) {
+    console.error(`[export-stats] no contributions[] in ${src} — aborting without overwriting ${OUT}`);
+    process.exit(1);
+  }
+  days.push(...c);
 }
 
 const n = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
@@ -87,14 +103,16 @@ for (const d of days) {
   totals.conversations += convs;
   value += n(d.totals?.cost);
 
+  // The same date can appear once per machine; sum them.
+  const prev = daily.get(date) || { total: 0, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, reasoning: 0, convs: 0 };
   daily.set(date, {
-    total,
-    input: inp,
-    output: out,
-    cacheRead: cr,
-    cacheCreation: cc,
-    reasoning: rsn,
-    convs,
+    total: prev.total + total,
+    input: prev.input + inp,
+    output: prev.output + out,
+    cacheRead: prev.cacheRead + cr,
+    cacheCreation: prev.cacheCreation + cc,
+    reasoning: prev.reasoning + rsn,
+    convs: prev.convs + convs,
   });
 
   for (const c of d.clients ?? []) {
@@ -118,7 +136,7 @@ for (const d of days) {
 
 const dates = [...daily.keys()].sort();
 if (!totals.total || dates.length === 0) {
-  console.error(`[export-stats] no usable days in ${SRC} — aborting without overwriting ${OUT}`);
+  console.error(`[export-stats] no usable days in ${SRCS.join(", ")} — aborting without overwriting ${OUT}`);
   process.exit(1);
 }
 
@@ -178,6 +196,6 @@ const out = {
 
 writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 console.log(`[export-stats] wrote ${OUT}`);
-console.log(`  source: tokscale graph (${SRC})`);
+console.log(`  sources: ${SRCS.join(', ')}`);
 console.log(`  ${out.totals.total.toLocaleString()} tokens · ${out.range.activeDays} active days · ${out.totals.cachePct}% cache`);
 console.log(`  est value $${out.totals.estValueUsd.toLocaleString()} (pricing coverage ${out.totals.valueCoveragePct}%) · ${models.length} models · ${tools.length} tools`);

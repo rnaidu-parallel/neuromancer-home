@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "stats": "node scripts/export-stats.mjs ${TOKSCALE_GRAPH:-/tmp/tokscale-graph.json}",
+    "stats": "node scripts/export-stats.mjs ${USAGE_TELEMETRY:-$HOME/usage-telemetry}",
     "refresh": "bash scripts/refresh.sh",
     "build": "astro build",
     "preview": "astro preview",
